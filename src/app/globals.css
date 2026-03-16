@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+
+  --color-dark-50: #f8fafc;
+  --color-dark-100: #f1f5f9;
+  --color-dark-200: #e2e8f0;
+  --color-dark-300: #94a3b8;
+  --color-dark-400: #64748b;
+  --color-dark-500: #475569;
+  --color-dark-600: #334155;
+  --color-dark-700: #1e293b;
+  --color-dark-800: #0f172a;
+  --color-dark-900: #020617;
+
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+}
+
+* {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+input, textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+html, body {
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background-color: #020617;
+  color: var(--color-dark-200);
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* Scrollbar inside windows */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}
+
+/* Blinking cursor */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
+
+/* Window appear animation */
+@keyframes windowOpen {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.animate-window-open {
+  animation: windowOpen 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Dock bounce */
+@keyframes dockBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+.animate-dock-bounce {
+  animation: dockBounce 0.5s ease;
+}
+
+/* Boot screen */
+@keyframes fadeUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fadeUp 0.8s ease forwards;
+}
+
+@keyframes progressBar {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+.animate-progress {
+  animation: progressBar 2s ease-in-out forwards;
+}
