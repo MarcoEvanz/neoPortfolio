@@ -1,14 +1,18 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
-import { HiUser, HiCode, HiTerminal, HiMail, HiCube } from "react-icons/hi";
+import { HiUser, HiCode, HiTerminal, HiMail, HiCube, HiShoppingCart } from "react-icons/hi";
+import { IoGameController } from "react-icons/io5";
 import Window, { type WindowHandle } from "./Window";
+import { DesktopContext } from "./DesktopContext";
 import AboutApp from "./apps/AboutApp";
 import ProjectsApp from "./apps/ProjectsApp";
 import SkillsApp from "./apps/SkillsApp";
 import TerminalApp from "./apps/TerminalApp";
 import ContactApp from "./apps/ContactApp";
+import AppStoreApp from "./apps/AppStoreApp";
+import FlappyBirdApp from "./apps/FlappyBirdApp";
 
 interface AppConfig {
   id: string;
@@ -65,6 +69,28 @@ const apps: AppConfig[] = [
     component: <ContactApp />,
     defaultPos: { x: 200, y: 90 },
     defaultSize: { w: 420, h: 520 },
+  },
+  {
+    id: "appstore",
+    title: "App Store",
+    icon: <HiShoppingCart />,
+    iconBg: "from-[#1d8cf8] to-[#0070f3]",
+    component: <AppStoreApp />,
+    defaultPos: { x: 120, y: 50 },
+    defaultSize: { w: 680, h: 500 },
+  },
+];
+
+// Apps that can be downloaded from the App Store
+const downloadableApps: AppConfig[] = [
+  {
+    id: "flappybird",
+    title: "Flappy Bird",
+    icon: <IoGameController />,
+    iconBg: "from-yellow-400 to-orange-500",
+    component: <FlappyBirdApp />,
+    defaultPos: { x: 200, y: 60 },
+    defaultSize: { w: 440, h: 600 },
   },
 ];
 
@@ -864,8 +890,19 @@ export default function Desktop() {
   const [activeWindow, setActiveWindow] = useState<string | null>(null);
   const [zCounter, setZCounter] = useState(10);
   const [zMap, setZMap] = useState<Record<string, number>>({});
+  const [installedAppIds, setInstalledAppIds] = useState<string[]>([]);
   const dockRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const windowRefs = useRef<Record<string, WindowHandle | null>>({});
+
+  // All available apps = built-in + installed downloadable apps
+  const allApps = useMemo(() => {
+    const installed = downloadableApps.filter((a) => installedAppIds.includes(a.id));
+    return [...apps, ...installed];
+  }, [installedAppIds]);
+
+  const installApp = useCallback((id: string) => {
+    setInstalledAppIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  }, []);
 
   // Get dock icon center position for a given app (called at minimize time)
   const getDockTarget = useCallback((id: string) => {
@@ -932,12 +969,15 @@ export default function Desktop() {
     return windowRefs.current[id]?.isMaximized() ?? false;
   }, []);
 
+  const desktopActions = useMemo(() => ({ openApp, installApp, installedApps: installedAppIds }), [openApp, installApp, installedAppIds]);
+
   const activeTitle =
     activeWindow
-      ? apps.find((a) => a.id === activeWindow)?.title ?? null
+      ? allApps.find((a) => a.id === activeWindow)?.title ?? null
       : null;
 
   return (
+    <DesktopContext.Provider value={desktopActions}>
     <div className="fixed inset-0 overflow-hidden">
       <AnimatePresence>
         {!booted && <BootScreen onComplete={() => setBooted(true)} />}
@@ -958,7 +998,7 @@ export default function Desktop() {
             activeAppTitle={activeTitle}
             activeWindow={activeWindow}
             openWindows={openWindows}
-            appList={apps}
+            appList={allApps}
             onCloseWindow={closeApp}
             onMinimizeWindow={minimizeApp}
             onToggleMaximize={toggleMaximizeApp}
@@ -971,7 +1011,7 @@ export default function Desktop() {
             onShutDown={() => setPowerState("shuttingDown")}
           />
 
-          <DesktopIcons apps={apps} onOpen={openApp} />
+          <DesktopIcons apps={allApps} onOpen={openApp} />
 
           {/* Watermark */}
           <motion.div
@@ -992,7 +1032,7 @@ export default function Desktop() {
 
           {/* Windows — always rendered (minimized ones hidden via display:none) */}
           {openWindows.map((id) => {
-            const app = apps.find((a) => a.id === id);
+            const app = allApps.find((a) => a.id === id);
             if (!app) return null;
             return (
               <Window
@@ -1017,7 +1057,7 @@ export default function Desktop() {
           })}
 
           <Dock
-            apps={apps}
+            apps={allApps}
             openWindows={openWindows}
             onOpen={openApp}
             onFocus={focusApp}
@@ -1048,5 +1088,6 @@ export default function Desktop() {
         )}
       </AnimatePresence>
     </div>
+    </DesktopContext.Provider>
   );
 }
