@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import { HiUser, HiCode, HiTerminal, HiMail, HiCube } from "react-icons/hi";
-import Window from "./Window";
+import Window, { type WindowHandle } from "./Window";
 import AboutApp from "./apps/AboutApp";
 import ProjectsApp from "./apps/ProjectsApp";
 import SkillsApp from "./apps/SkillsApp";
@@ -116,9 +116,329 @@ function BootScreen({ onComplete }: { onComplete: () => void }) {
   );
 }
 
-function TopBar({ activeAppTitle }: { activeAppTitle: string | null }) {
+/* ─── "About This Mac" modal ─── */
+function AboutThisMac({ onClose }: { onClose: () => void }) {
+  const [info, setInfo] = useState({
+    os: "",
+    browser: "",
+    resolution: "",
+    cores: "",
+    memory: "",
+    language: "",
+    platform: "",
+  });
+
+  useEffect(() => {
+    const ua = navigator.userAgent;
+    let os = "Unknown OS";
+    if (ua.includes("Win")) os = ua.includes("Windows NT 10") ? "Windows 10/11" : "Windows";
+    else if (ua.includes("Mac")) os = "macOS";
+    else if (ua.includes("Linux")) os = "Linux";
+    else if (ua.includes("Android")) os = "Android";
+    else if (ua.includes("iPhone") || ua.includes("iPad")) os = "iOS";
+
+    let browser = "Unknown Browser";
+    if (ua.includes("Firefox/")) browser = `Firefox ${ua.split("Firefox/")[1]?.split(" ")[0]}`;
+    else if (ua.includes("Edg/")) browser = `Edge ${ua.split("Edg/")[1]?.split(" ")[0]}`;
+    else if (ua.includes("Chrome/")) browser = `Chrome ${ua.split("Chrome/")[1]?.split(" ")[0]}`;
+    else if (ua.includes("Safari/") && !ua.includes("Chrome")) browser = `Safari ${ua.split("Version/")[1]?.split(" ")[0] ?? ""}`;
+
+    setInfo({
+      os: "PortfolioOS",
+      browser,
+      resolution: `${window.screen.width} x ${window.screen.height}`,
+      cores: `${navigator.hardwareConcurrency ?? "Unknown"}`,
+      memory: `${(navigator as unknown as Record<string, unknown>).deviceMemory ?? "Unknown"} GB`,
+      language: navigator.language,
+      platform: "pOS36",
+    });
+  }, []);
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[90] flex items-center justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-black/40" />
+      <motion.div
+        className="relative w-[340px] rounded-xl overflow-hidden"
+        style={{
+          background: "rgba(30,30,30,0.95)",
+          backdropFilter: "blur(50px) saturate(1.5)",
+          WebkitBackdropFilter: "blur(50px) saturate(1.5)",
+          border: "1px solid rgba(255,255,255,0.12)",
+          boxShadow: "0 24px 80px rgba(0,0,0,0.6)",
+        }}
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex flex-col items-center pt-6 pb-4 px-6">
+          {/* macOS-style logo */}
+          <svg className="w-16 h-16 text-white/80 mb-3" viewBox="0 0 384 512" fill="currentColor">
+            <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-62.1 24-72.5-24 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
+          </svg>
+          <h2 className="text-xl font-light text-white mb-0.5">PortfolioOS</h2>
+          <p className="text-[11px] text-white/40 mb-4">Version 1.0.0</p>
+
+          <div className="w-full h-px bg-white/10 mb-3" />
+
+          <div className="w-full text-[12px] space-y-1.5">
+            {([
+              ["OS", info.os],
+              ["Platform", info.platform],
+              ["Browser", info.browser],
+              ["Display", info.resolution],
+              ["CPU Cores", info.cores],
+              ["Memory", info.memory],
+              ["Language", info.language],
+            ] as [string, string][]).map(([label, value]) => (
+              <div key={label} className="flex justify-between">
+                <span className="text-white/50">{label}</span>
+                <span className="text-white/80 font-medium">{value}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="w-full h-px bg-white/10 mt-3 mb-3" />
+
+          <button
+            onClick={onClose}
+            className="px-6 py-1.5 rounded-md text-[13px] text-white/90 font-medium bg-[#3478f6] hover:bg-[#2563eb] transition-colors"
+          >
+            OK
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+/* ─── Power state overlays (Sleep / Restart / Shut Down) ─── */
+type PowerState = "active" | "sleep" | "restarting" | "shuttingDown" | "off";
+
+function SleepOverlay({ onWake }: { onWake: () => void }) {
+  return (
+    <motion.div
+      className="fixed inset-0 z-[110] bg-black cursor-pointer flex items-center justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 1.2, ease: "easeInOut" }}
+      onClick={onWake}
+      onKeyDown={onWake}
+      tabIndex={0}
+    >
+      <motion.p
+        className="text-white/20 text-sm"
+        animate={{ opacity: [0.2, 0.5, 0.2] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+      >
+        Click or press any key to wake
+      </motion.p>
+    </motion.div>
+  );
+}
+
+function ShutDownOverlay({ onPowerOn }: { onPowerOn: () => void }) {
+  return (
+    <motion.div
+      className="fixed inset-0 z-[110] bg-black cursor-pointer flex items-center justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 1.5, ease: "easeInOut" }}
+      onClick={onPowerOn}
+      tabIndex={0}
+    >
+      <motion.div
+        className="flex flex-col items-center gap-3"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2 }}
+      >
+        <svg className="w-8 h-8 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <path d="M12 2v6" />
+          <circle cx="12" cy="14" r="8" />
+        </svg>
+        <p className="text-white/20 text-xs">Click to power on</p>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function RestartOverlay({ onComplete }: { onComplete: () => void }) {
+  const [phase, setPhase] = useState<"fadeOut" | "boot">("fadeOut");
+
+  useEffect(() => {
+    const t = setTimeout(() => setPhase("boot"), 1500);
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    if (phase === "boot") {
+      const t = setTimeout(onComplete, 2800);
+      return () => clearTimeout(t);
+    }
+  }, [phase, onComplete]);
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[110] bg-dark-900 flex flex-col items-center justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      {phase === "boot" && (
+        <>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="mb-8"
+          >
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-primary-500/20">
+              <span className="text-3xl font-bold text-white">D</span>
+            </div>
+          </motion.div>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="text-white font-medium mb-6"
+          >
+            PortfolioOS
+          </motion.p>
+          <div className="w-48 h-1 bg-white/10 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-primary-500 to-cyan-500 rounded-full animate-progress" />
+          </div>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.4 }}
+            transition={{ delay: 1 }}
+            className="mt-4 text-xs text-dark-500 font-mono"
+          >
+            Loading desktop environment...
+          </motion.p>
+        </>
+      )}
+    </motion.div>
+  );
+}
+
+/* ─── Menu bar helpers ─── */
+interface MenuItem {
+  label?: string;
+  shortcut?: string;
+  action?: () => void;
+  disabled?: boolean;
+  separator?: boolean;
+  checked?: boolean;
+}
+
+function MenuRow({ item }: { item: MenuItem }) {
+  if (item.separator) {
+    return <div className="h-px bg-white/10 my-[3px] mx-2" />;
+  }
+  const disabled = item.disabled || !item.action;
+  return (
+    <button
+      className={`w-full flex items-center justify-between px-3 py-[3px] text-[13px] text-left rounded-[4px] ${
+        disabled
+          ? "text-white/25 cursor-default"
+          : "text-white/90 hover:bg-[#3478f6] hover:text-white"
+      }`}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (!disabled) item.action?.();
+      }}
+      disabled={disabled}
+    >
+      <span className="flex items-center gap-2">
+        {item.checked !== undefined && (
+          <span className="w-3 text-center text-[11px]">{item.checked ? "✓" : ""}</span>
+        )}
+        {item.label}
+      </span>
+      {item.shortcut && (
+        <span className={`ml-6 text-[12px] ${disabled ? "text-white/15" : "text-white/40"}`}>
+          {item.shortcut}
+        </span>
+      )}
+    </button>
+  );
+}
+
+function MenuDropdown({
+  items,
+  onClose,
+}: {
+  items: MenuItem[];
+  onClose: () => void;
+}) {
+  return (
+    <div
+      className="absolute top-[22px] left-0 min-w-[220px] py-1 px-[3px] rounded-md z-[70]"
+      style={{
+        background: "rgba(30,30,30,0.95)",
+        backdropFilter: "blur(50px) saturate(1.5)",
+        WebkitBackdropFilter: "blur(50px) saturate(1.5)",
+        border: "1px solid rgba(255,255,255,0.12)",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.5), 0 0 0 0.5px rgba(0,0,0,0.3)",
+      }}
+      onMouseDown={(e) => e.stopPropagation()}
+    >
+      {items.map((item, i) => (
+        <MenuRow key={item.label ?? `sep-${i}`} item={{ ...item, action: item.action ? () => { item.action!(); onClose(); } : undefined }} />
+      ))}
+    </div>
+  );
+}
+
+interface TopBarProps {
+  activeAppTitle: string | null;
+  activeWindow: string | null;
+  openWindows: string[];
+  appList: AppConfig[];
+  onCloseWindow: (id: string) => void;
+  onMinimizeWindow: (id: string) => void;
+  onToggleMaximize: (id: string) => void;
+  isMaximized: (id: string) => boolean;
+  onOpenApp: (id: string) => void;
+  onFocusApp: (id: string) => void;
+  onAboutThisMac: () => void;
+  onSleep: () => void;
+  onRestart: () => void;
+  onShutDown: () => void;
+}
+
+function TopBar({
+  activeAppTitle,
+  activeWindow,
+  openWindows,
+  appList,
+  onCloseWindow,
+  onMinimizeWindow,
+  onToggleMaximize,
+  isMaximized,
+  onOpenApp,
+  onFocusApp,
+  onAboutThisMac,
+  onSleep,
+  onRestart,
+  onShutDown,
+}: TopBarProps) {
   const [time, setTime] = useState("");
   const [date, setDate] = useState("");
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const barRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const tick = () => {
@@ -143,8 +463,136 @@ function TopBar({ activeAppTitle }: { activeAppTitle: string | null }) {
     return () => clearInterval(id);
   }, []);
 
+  // Click outside to close menu
+  useEffect(() => {
+    if (!openMenu) return;
+    const handle = (e: MouseEvent) => {
+      if (barRef.current && !barRef.current.contains(e.target as Node)) {
+        setOpenMenu(null);
+      }
+    };
+    document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
+  }, [openMenu]);
+
+  const hasWindow = activeWindow !== null;
+
+  const menus: Record<string, { label: string; items: MenuItem[] }> = {
+    apple: {
+      label: "",
+      items: [
+        { label: "About This Mac", action: onAboutThisMac },
+        { separator: true },
+        { label: "System Preferences...", disabled: true },
+        { separator: true },
+        { label: "Sleep", action: onSleep },
+        { label: "Restart...", action: onRestart },
+        { label: "Shut Down...", action: onShutDown },
+      ],
+    },
+    app: {
+      label: activeAppTitle ?? "Finder",
+      items: [
+        { label: `About ${activeAppTitle ?? "Finder"}`, disabled: true },
+        { separator: true },
+        ...(hasWindow
+          ? [
+              { label: `Hide ${activeAppTitle}`, shortcut: "⌘H", action: () => onMinimizeWindow(activeWindow!) },
+              { separator: true },
+              { label: `Quit ${activeAppTitle}`, shortcut: "⌘Q", action: () => onCloseWindow(activeWindow!) },
+            ]
+          : []),
+      ],
+    },
+    file: {
+      label: "File",
+      items: [
+        { label: "New Window", disabled: true },
+        { separator: true },
+        {
+          label: "Close Window",
+          shortcut: "⌘W",
+          action: hasWindow ? () => onCloseWindow(activeWindow!) : undefined,
+          disabled: !hasWindow,
+        },
+      ],
+    },
+    edit: {
+      label: "Edit",
+      items: [
+        { label: "Undo", shortcut: "⌘Z", action: () => document.execCommand("undo") },
+        { label: "Redo", shortcut: "⇧⌘Z", action: () => document.execCommand("redo") },
+        { separator: true },
+        { label: "Cut", shortcut: "⌘X", action: () => document.execCommand("cut") },
+        { label: "Copy", shortcut: "⌘C", action: () => document.execCommand("copy") },
+        { label: "Paste", shortcut: "⌘V", action: () => document.execCommand("paste") },
+        { separator: true },
+        { label: "Select All", shortcut: "⌘A", action: () => document.execCommand("selectAll") },
+      ],
+    },
+    view: {
+      label: "View",
+      items: [
+        {
+          label: hasWindow && isMaximized(activeWindow!) ? "Exit Full Screen" : "Enter Full Screen",
+          shortcut: "⌃⌘F",
+          action: hasWindow ? () => onToggleMaximize(activeWindow!) : undefined,
+          disabled: !hasWindow,
+        },
+      ],
+    },
+    window: {
+      label: "Window",
+      items: [
+        {
+          label: "Minimize",
+          shortcut: "⌘M",
+          action: hasWindow ? () => onMinimizeWindow(activeWindow!) : undefined,
+          disabled: !hasWindow,
+        },
+        {
+          label: "Zoom",
+          action: hasWindow ? () => onToggleMaximize(activeWindow!) : undefined,
+          disabled: !hasWindow,
+        },
+        { separator: true },
+        { label: "Bring All to Front", action: hasWindow ? () => onFocusApp(activeWindow!) : undefined, disabled: !hasWindow },
+        ...(openWindows.length > 0
+          ? [
+              { separator: true } as MenuItem,
+              ...openWindows.map((id) => {
+                const app = appList.find((a) => a.id === id);
+                return {
+                  label: app?.title ?? id,
+                  checked: id === activeWindow,
+                  action: () => onFocusApp(id),
+                } as MenuItem;
+              }),
+            ]
+          : []),
+      ],
+    },
+    help: {
+      label: "Help",
+      items: [
+        { label: "Portfolio Help", disabled: true },
+      ],
+    },
+  };
+
+  const menuKeys = ["apple", "app", "file", "edit", "view", "window", "help"];
+
+  const handleClick = (key: string) => {
+    setOpenMenu((prev) => (prev === key ? null : key));
+  };
+
+  const handleHover = (key: string) => {
+    if (openMenu !== null) setOpenMenu(key);
+  };
+
   return (
     <div
+      ref={barRef}
       className="fixed top-0 left-0 right-0 h-[25px] z-[60] flex items-center px-4 text-[13px]"
       style={{
         background: "rgba(0,0,0,0.3)",
@@ -152,23 +600,48 @@ function TopBar({ activeAppTitle }: { activeAppTitle: string | null }) {
         WebkitBackdropFilter: "blur(50px) saturate(1.8)",
       }}
     >
-      {/* Left: Apple logo + app name + menu */}
-      <div className="flex items-center gap-4">
-        <svg
-          className="w-[14px] h-[17px] text-white/90"
-          viewBox="0 0 384 512"
-          fill="currentColor"
-        >
-          <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-62.1 24-72.5-24 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
-        </svg>
-        <span className="font-semibold text-white/90 text-[13px]">
-          {activeAppTitle ?? "Finder"}
-        </span>
-        <span className="text-white/40 text-[13px]">File</span>
-        <span className="text-white/40 text-[13px]">Edit</span>
-        <span className="text-white/40 text-[13px]">View</span>
-        <span className="text-white/40 text-[13px]">Window</span>
-        <span className="text-white/40 text-[13px]">Help</span>
+      {/* Left: Apple logo + menus */}
+      <div className="flex items-center h-full">
+        {menuKeys.map((key) => {
+          const menu = menus[key];
+          const isApple = key === "apple";
+          const isApp = key === "app";
+          const isOpen = openMenu === key;
+
+          return (
+            <div
+              key={key}
+              className="relative h-full flex items-center"
+              onClick={() => handleClick(key)}
+              onMouseEnter={() => handleHover(key)}
+            >
+              <div
+                className={`px-2 h-[20px] flex items-center rounded-[3px] cursor-default select-none ${
+                  isOpen ? "bg-white/15" : "hover:bg-white/5"
+                }`}
+              >
+                {isApple ? (
+                  <svg
+                    className="w-[14px] h-[17px] text-white/90"
+                    viewBox="0 0 384 512"
+                    fill="currentColor"
+                  >
+                    <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-62.1 24-72.5-24 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
+                  </svg>
+                ) : (
+                  <span
+                    className={`text-[13px] ${
+                      isApp ? "font-semibold text-white/90" : "text-white/80"
+                    }`}
+                  >
+                    {menu.label}
+                  </span>
+                )}
+              </div>
+              {isOpen && <MenuDropdown items={menu.items} onClose={() => setOpenMenu(null)} />}
+            </div>
+          );
+        })}
       </div>
 
       <div className="flex-1" />
@@ -384,12 +857,15 @@ function DesktopIcons({
 
 export default function Desktop() {
   const [booted, setBooted] = useState(false);
+  const [powerState, setPowerState] = useState<PowerState>("active");
+  const [showAboutMac, setShowAboutMac] = useState(false);
   const [openWindows, setOpenWindows] = useState<string[]>([]);
   const [minimized, setMinimized] = useState<string[]>([]);
   const [activeWindow, setActiveWindow] = useState<string | null>(null);
   const [zCounter, setZCounter] = useState(10);
   const [zMap, setZMap] = useState<Record<string, number>>({});
   const dockRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const windowRefs = useRef<Record<string, WindowHandle | null>>({});
 
   // Get dock icon center position for a given app (called at minimize time)
   const getDockTarget = useCallback((id: string) => {
@@ -448,6 +924,14 @@ export default function Desktop() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [booted]);
 
+  const toggleMaximizeApp = useCallback((id: string) => {
+    windowRefs.current[id]?.toggleMaximize();
+  }, []);
+
+  const isAppMaximized = useCallback((id: string) => {
+    return windowRefs.current[id]?.isMaximized() ?? false;
+  }, []);
+
   const activeTitle =
     activeWindow
       ? apps.find((a) => a.id === activeWindow)?.title ?? null
@@ -470,7 +954,22 @@ export default function Desktop() {
             }}
           />
 
-          <TopBar activeAppTitle={activeTitle} />
+          <TopBar
+            activeAppTitle={activeTitle}
+            activeWindow={activeWindow}
+            openWindows={openWindows}
+            appList={apps}
+            onCloseWindow={closeApp}
+            onMinimizeWindow={minimizeApp}
+            onToggleMaximize={toggleMaximizeApp}
+            isMaximized={isAppMaximized}
+            onOpenApp={openApp}
+            onFocusApp={focusApp}
+            onAboutThisMac={() => setShowAboutMac(true)}
+            onSleep={() => setPowerState("sleep")}
+            onRestart={() => setPowerState("restarting")}
+            onShutDown={() => setPowerState("shuttingDown")}
+          />
 
           <DesktopIcons apps={apps} onOpen={openApp} />
 
@@ -498,6 +997,7 @@ export default function Desktop() {
             return (
               <Window
                 key={id}
+                ref={(handle) => { windowRefs.current[id] = handle; }}
                 id={id}
                 title={app.title}
                 icon={app.icon}
@@ -523,8 +1023,30 @@ export default function Desktop() {
             onFocus={focusApp}
             dockRefs={dockRefs}
           />
+
+          {/* About This Mac modal */}
+          <AnimatePresence>
+            {showAboutMac && <AboutThisMac onClose={() => setShowAboutMac(false)} />}
+          </AnimatePresence>
         </>
       )}
+
+      {/* Power state overlays */}
+      <AnimatePresence>
+        {powerState === "sleep" && (
+          <SleepOverlay onWake={() => setPowerState("active")} />
+        )}
+        {powerState === "shuttingDown" && (
+          <ShutDownOverlay onPowerOn={() => {
+            setPowerState("active");
+            setBooted(false);
+            setTimeout(() => setBooted(true), 2800);
+          }} />
+        )}
+        {powerState === "restarting" && (
+          <RestartOverlay onComplete={() => setPowerState("active")} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

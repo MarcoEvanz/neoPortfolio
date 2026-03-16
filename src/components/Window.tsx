@@ -1,6 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from "react";
+
+export interface WindowHandle {
+  toggleMaximize: () => void;
+  isMaximized: () => boolean;
+}
 
 interface WindowProps {
   id: string;
@@ -18,7 +23,7 @@ interface WindowProps {
   onMinimize: () => void;
 }
 
-export default function Window({
+const Window = forwardRef<WindowHandle, WindowProps>(function Window({
   title,
   icon,
   children,
@@ -31,7 +36,7 @@ export default function Window({
   onFocus,
   onClose,
   onMinimize,
-}: WindowProps) {
+}, ref) {
   const containerRef = useRef<HTMLDivElement>(null);
   const posRef = useRef(defaultPosition ?? { x: 100, y: 60 });
   const dragging = useRef(false);
@@ -43,8 +48,14 @@ export default function Window({
   const animating = useRef(false);
   const minimizeData = useRef({ tx: 0, ty: 0 });
   const currentAnim = useRef<Animation | null>(null);
+  const toggleMaximizeRef = useRef<(() => void) | null>(null);
   const w = defaultSize?.w ?? 600;
   const h = defaultSize?.h ?? 440;
+
+  useImperativeHandle(ref, () => ({
+    toggleMaximize: () => toggleMaximizeRef.current?.(),
+    isMaximized: () => maximized,
+  }), [maximized]);
 
   // Set initial layout via DOM before first paint (prevents flash)
   useLayoutEffect(() => {
@@ -267,6 +278,8 @@ export default function Window({
     onFocus();
   }, [maximized, w, h, onFocus]);
 
+  toggleMaximizeRef.current = toggleMaximize;
+
   const handleDoubleClick = useCallback(
     (e: React.MouseEvent) => {
       if ((e.target as HTMLElement).closest("button")) return;
@@ -395,4 +408,6 @@ export default function Window({
       </div>
     </div>
   );
-}
+});
+
+export default Window;
