@@ -5,11 +5,13 @@ export default function AboutApp() {
     <div className="p-6 space-y-6">
       {/* Profile header */}
       <div className="flex items-center gap-5">
-        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-500 to-cyan-500 flex items-center justify-center text-3xl font-bold text-white shrink-0">
-          D
-        </div>
+        <img
+          src="https://avatars.githubusercontent.com/u/130949494?v=4"
+          alt="Phạm Hoàng Long"
+          className="w-20 h-20 rounded-2xl object-cover shrink-0"
+        />
         <div>
-          <h1 className="text-xl font-bold text-white">Your Name</h1>
+          <h1 className="text-xl font-bold text-white">Phạm Hoàng Long</h1>
           <p className="text-primary-400 text-sm font-medium">
             Web Developer & Game Developer
           </p>
@@ -48,8 +50,8 @@ export default function AboutApp() {
       <div className="grid grid-cols-2 gap-3">
         {[
           { label: "Experience", value: "1+ Year" },
-          { label: "Projects", value: "10+" },
-          { label: "Location", value: "Your City" },
+          { label: "Projects", value: "5+" },
+          { label: "Location", value: "Ho Chi Minh City" },
           { label: "Focus", value: "Web & Games" },
         ].map((item) => (
           <div

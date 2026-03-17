@@ -1,10 +1,12 @@
 import type { NextConfig } from "next";
 
+const isProd = process.env.NODE_ENV === "production";
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: "export",
-  basePath: "/neoPortfolio",
-  assetPrefix: "/neoPortfolio/",
+  basePath: isProd ? "/neoPortfolio" : "",
+  assetPrefix: isProd ? "/neoPortfolio/" : "",
 };
 
 export default nextConfig;

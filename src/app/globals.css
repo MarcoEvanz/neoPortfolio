@@ -48,6 +48,10 @@ body {
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
+/* Hide scrollbar utility */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* Scrollbar inside windows */
 ::-webkit-scrollbar {
   width: 5px;

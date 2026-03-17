@@ -11,37 +11,47 @@ const projects = [
     tags: ["Next.js", "TypeScript", "Tailwind"],
     category: "Web",
     color: "from-blue-500 to-cyan-500",
-    demo: "#",
+    demo: "https://marcoevanz.github.io/neoPortfolio/",
     code: "#",
   },
   {
-    title: "E-Commerce Store",
+    title: "Website Đoàn Thanh Niên",
     description:
-      "Full-stack store with product catalog, cart, checkout flow, and server-side rendering.",
+      "Website for youth union organization with event management and information portal.",
     tags: ["Next.js", "React", "Tailwind"],
     category: "Web",
     color: "from-violet-500 to-purple-500",
-    demo: "#",
+    demo: "https://sanphamthanhphudt.vercel.app/",
     code: "#",
   },
   {
-    title: "2D Platformer Game",
+    title: "Buffalo 5-Reel Deluxe Classic",
     description:
-      "Side-scrolling platformer with multiple levels, enemy AI, physics, and collectible items.",
+      "Vegas-style slot game with progressive jackpots, stacked wilds, prize picks, live tournaments and daily bonus coins. Features classic buffalo-themed 5-reel machines.",
     tags: ["Unity", "C#"],
     category: "Game",
     color: "from-emerald-500 to-green-500",
-    demo: "#",
+    demo: "https://play.google.com/store/apps/details?id=com.foxcubgames.buffalobillionairecasino",
     code: "#",
   },
   {
-    title: "3D Adventure Game",
+    title: "Slots Vacation: Slot Machines",
     description:
-      "Exploration game with procedural terrain, inventory system, and dynamic lighting.",
+      "Top-rated free slots game with a Billion Coin Giveaway every week. Features a huge variety of themed slot machines, live tournaments, powerful boosters, and hourly prizes.",
     tags: ["Unity", "C#"],
     category: "Game",
     color: "from-orange-500 to-amber-500",
-    demo: "#",
+    demo: "https://play.google.com/store/apps/details?id=com.scopely.slotsvacation",
+    code: "#",
+  },
+  {
+    title: "PvZ2 Gardenless",
+    description:
+      "Fan-made Plants vs Zombies 2 web game with garden-free gameplay and custom levels.",
+    tags: ["Cocos", "TypeScript"],
+    category: "Game",
+    color: "from-lime-500 to-green-600",
+    demo: "https://marcoevanz.github.io/pvzge_web/",
     code: "#",
   },
 ];
@@ -149,6 +159,8 @@ export default function ProjectsApp() {
               <div className="flex gap-2 pt-2">
                 <a
                   href={filtered[selected].demo}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex items-center gap-1 px-3 py-1.5 text-[11px] bg-primary-600 hover:bg-primary-500 text-white rounded-lg transition-colors"
                 >
                   <HiExternalLink size={12} />
@@ -156,6 +168,8 @@ export default function ProjectsApp() {
                 </a>
                 <a
                   href={filtered[selected].code}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex items-center gap-1 px-3 py-1.5 text-[11px] border border-white/10 text-dark-300 hover:text-white rounded-lg transition-colors"
                 >
                   <HiCode size={12} />

@@ -22,7 +22,12 @@ export default function FlappyBirdApp() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [gameState, setGameState] = useState<"idle" | "playing" | "dead">("idle");
   const [score, setScore] = useState(0);
-  const [best, setBest] = useState(0);
+  const [best, setBest] = useState(() => {
+    if (typeof window !== "undefined") {
+      return parseInt(localStorage.getItem("flappybird-best") || "0", 10);
+    }
+    return 0;
+  });
 
   const birdY = useRef(CANVAS_H / 2 - BIRD_SIZE / 2);
   const birdVel = useRef(0);
@@ -117,7 +122,7 @@ export default function FlappyBirdApp() {
         // Ground / ceiling
         if (by + BIRD_SIZE > CANVAS_H - 40 || by < 0) {
           setGameState("dead");
-          setBest((prev) => Math.max(prev, scoreRef.current));
+          setBest((prev) => { const n = Math.max(prev, scoreRef.current); localStorage.setItem("flappybird-best", String(n)); return n; });
         }
 
         // Pipes
@@ -128,7 +133,7 @@ export default function FlappyBirdApp() {
             (by < p.topH || by + BIRD_SIZE > p.topH + GAP)
           ) {
             setGameState("dead");
-            setBest((prev) => Math.max(prev, scoreRef.current));
+            setBest((prev) => { const n = Math.max(prev, scoreRef.current); localStorage.setItem("flappybird-best", String(n)); return n; });
           }
         }
       }

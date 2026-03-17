@@ -25,7 +25,7 @@ const commands: Record<string, string> = {
   projects:
     "01 Portfolio Website    [Next.js, TypeScript, Tailwind]\n02 E-Commerce Store     [Next.js, React, Tailwind]\n03 2D Platformer Game    [Unity, C#]\n04 3D Adventure Game     [Unity, C#]\n\nType 'open projects' in the Dock to view details.",
   contact:
-    "Email: your.email@example.com\nGitHub: github.com/yourusername\nLinkedIn: linkedin.com/in/yourname\n\nFeel free to reach out!",
+    "Email: marcoschronos@gmail.com\nGitHub: github.com/MarcoEvanz\nLinkedIn: linkedin.com/in/long-phạm-604272361\n\nFeel free to reach out!",
   experience:
     "Timeline:\n  2024 - Present | Junior Developer\n  • Building web apps with Next.js & React\n  • Developing games with Unity & C#\n  • 10+ projects completed",
   whoami: "visitor@portfolio",

@@ -1,6 +1,6 @@
 "use client";
 
-import { FaGithub, FaLinkedin, FaDiscord } from "react-icons/fa";
+import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { HiMail } from "react-icons/hi";
 
 export default function ContactApp() {
@@ -17,7 +17,7 @@ export default function ContactApp() {
 
       {/* Email */}
       <a
-        href="mailto:your.email@example.com"
+        href="mailto:marcoschronos@gmail.com"
         className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.03] hover:bg-primary-500/10 border border-white/5 hover:border-primary-500/20 transition-all group"
       >
         <div className="w-9 h-9 rounded-lg bg-primary-500/10 flex items-center justify-center">
@@ -25,7 +25,7 @@ export default function ContactApp() {
         </div>
         <div>
           <p className="text-xs text-dark-200 font-medium group-hover:text-white transition-colors">
-            your.email@example.com
+            marcoschronos@gmail.com
           </p>
           <p className="text-[10px] text-dark-500">Email</p>
         </div>
@@ -40,20 +40,14 @@ export default function ContactApp() {
           {
             icon: FaGithub,
             label: "GitHub",
-            handle: "@yourusername",
-            href: "#",
+            handle: "@MarcoEvanz",
+            href: "https://github.com/MarcoEvanz",
           },
           {
             icon: FaLinkedin,
             label: "LinkedIn",
-            handle: "in/yourname",
-            href: "#",
-          },
-          {
-            icon: FaDiscord,
-            label: "Discord",
-            handle: "yourname",
-            href: "#",
+            handle: "Long Phạm",
+            href: "https://www.linkedin.com/in/long-ph%E1%BA%A1m-604272361/",
           },
         ].map((social) => (
           <a
