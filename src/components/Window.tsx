@@ -21,6 +21,7 @@ interface WindowProps {
   onFocus: () => void;
   onClose: () => void;
   onMinimize: () => void;
+  onMaximizeChange?: (maximized: boolean) => void;
 }
 
 const Window = forwardRef<WindowHandle, WindowProps>(function Window({
@@ -36,6 +37,7 @@ const Window = forwardRef<WindowHandle, WindowProps>(function Window({
   onFocus,
   onClose,
   onMinimize,
+  onMaximizeChange,
 }, ref) {
   const containerRef = useRef<HTMLDivElement>(null);
   const posRef = useRef(defaultPosition ?? { x: 100, y: 60 });
@@ -258,6 +260,7 @@ const Window = forwardRef<WindowHandle, WindowProps>(function Window({
       el.style.height = `${h}px`;
       el.style.borderRadius = "10px";
       setMaximized(false);
+      onMaximizeChange?.(false);
       setTimeout(() => {
         if (el) el.style.transition = "";
       }, 300);
@@ -271,6 +274,7 @@ const Window = forwardRef<WindowHandle, WindowProps>(function Window({
       el.style.height = "calc(100vh - 25px)";
       el.style.borderRadius = "0px";
       setMaximized(true);
+      onMaximizeChange?.(true);
       setTimeout(() => {
         if (el) el.style.transition = "";
       }, 300);

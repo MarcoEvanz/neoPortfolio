@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { HiUser, HiCode, HiTerminal, HiMail, HiCube, HiStar, HiDownload, HiSearch } from "react-icons/hi";
-import { IoGameController } from "react-icons/io5";
+import { IoGameController, IoLeaf } from "react-icons/io5";
 import { useDesktop } from "../DesktopContext";
 
 interface StoreApp {
@@ -96,6 +96,19 @@ const storeApps: StoreApp[] = [
     rating: 4.9,
     reviews: "12.5K",
     size: "2 MB",
+    builtIn: false,
+  },
+  {
+    id: "pvz2",
+    name: "PvZ2 Gardendless",
+    subtitle: "Plants vs Zombies",
+    description: "A full rewrite of Plants vs Zombies 2 built entirely with web technologies. Defend your garden from waves of zombies with an arsenal of plants. Powered by the Cocos engine.",
+    icon: <IoLeaf className="text-2xl" />,
+    iconBg: "from-green-500 to-lime-400",
+    category: "Games",
+    rating: 4.8,
+    reviews: "8.3K",
+    size: "48 MB",
     builtIn: false,
   },
 ];

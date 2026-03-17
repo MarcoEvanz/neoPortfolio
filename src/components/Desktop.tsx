@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import { HiUser, HiCode, HiTerminal, HiMail, HiCube, HiShoppingCart } from "react-icons/hi";
-import { IoGameController } from "react-icons/io5";
+import { IoGameController, IoLeaf } from "react-icons/io5";
 import Window, { type WindowHandle } from "./Window";
 import { DesktopContext } from "./DesktopContext";
 import AboutApp from "./apps/AboutApp";
@@ -13,6 +13,7 @@ import TerminalApp from "./apps/TerminalApp";
 import ContactApp from "./apps/ContactApp";
 import AppStoreApp from "./apps/AppStoreApp";
 import FlappyBirdApp from "./apps/FlappyBirdApp";
+import PvZ2App from "./apps/PvZ2App";
 
 interface AppConfig {
   id: string;
@@ -22,6 +23,7 @@ interface AppConfig {
   component: React.ReactNode;
   defaultPos: { x: number; y: number };
   defaultSize: { w: number; h: number };
+  isGame?: boolean;
 }
 
 const apps: AppConfig[] = [
@@ -91,6 +93,17 @@ const downloadableApps: AppConfig[] = [
     component: <FlappyBirdApp />,
     defaultPos: { x: 200, y: 60 },
     defaultSize: { w: 440, h: 600 },
+    isGame: true,
+  },
+  {
+    id: "pvz2",
+    title: "PvZ2 Gardendless",
+    icon: <IoLeaf />,
+    iconBg: "from-green-500 to-lime-400",
+    component: <PvZ2App />,
+    defaultPos: { x: 100, y: 40 },
+    defaultSize: { w: 960, h: 640 },
+    isGame: true,
   },
 ];
 
@@ -854,7 +867,7 @@ function DesktopIcons({
   onOpen: (id: string) => void;
 }) {
   return (
-    <div className="absolute top-10 right-5 flex flex-col gap-1 z-10">
+    <div className="absolute top-10 right-5 flex flex-col gap-1" style={{ zIndex: 5 }}>
       {appList.map((app, i) => (
         <motion.button
           key={app.id}
@@ -891,6 +904,7 @@ export default function Desktop() {
   const [zCounter, setZCounter] = useState(10);
   const [zMap, setZMap] = useState<Record<string, number>>({});
   const [installedAppIds, setInstalledAppIds] = useState<string[]>([]);
+  const [maximizedWindow, setMaximizedWindow] = useState<string | null>(null);
   const dockRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const windowRefs = useRef<Record<string, WindowHandle | null>>({});
 
@@ -945,6 +959,7 @@ export default function Desktop() {
     setOpenWindows((prev) => prev.filter((w) => w !== id));
     setMinimized((prev) => prev.filter((w) => w !== id));
     setActiveWindow((prev) => (prev === id ? null : prev));
+    setMaximizedWindow((prev) => (prev === id ? null : prev));
   }, []);
 
   const minimizeApp = useCallback((id: string) => {
@@ -970,6 +985,14 @@ export default function Desktop() {
   }, []);
 
   const desktopActions = useMemo(() => ({ openApp, installApp, installedApps: installedAppIds }), [openApp, installApp, installedAppIds]);
+
+  const hasFullscreen = maximizedWindow !== null;
+
+  // Hide desktop icons when any game window is open (not minimized)
+  const hasOpenGame = openWindows.some((id) => {
+    const app = allApps.find((a) => a.id === id);
+    return app?.isGame && !minimized.includes(id);
+  });
 
   const activeTitle =
     activeWindow
@@ -1011,9 +1034,10 @@ export default function Desktop() {
             onShutDown={() => setPowerState("shuttingDown")}
           />
 
-          <DesktopIcons apps={allApps} onOpen={openApp} />
+          {!hasFullscreen && !hasOpenGame && <DesktopIcons apps={allApps} onOpen={openApp} />}
 
           {/* Watermark */}
+          {!hasFullscreen && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1029,6 +1053,7 @@ export default function Desktop() {
               Double-click icons or use the dock to explore.
             </p>
           </motion.div>
+          )}
 
           {/* Windows — always rendered (minimized ones hidden via display:none) */}
           {openWindows.map((id) => {
@@ -1043,19 +1068,21 @@ export default function Desktop() {
                 icon={app.icon}
                 isActive={activeWindow === id}
                 isMinimized={minimized.includes(id)}
-                zIndex={zMap[id] ?? 10}
+                zIndex={(zMap[id] ?? 10) + (app.isGame ? 20 : 0)}
                 defaultPosition={app.defaultPos}
                 defaultSize={app.defaultSize}
                 getDockTarget={() => getDockTarget(id)}
                 onFocus={() => focusApp(id)}
                 onClose={() => closeApp(id)}
                 onMinimize={() => minimizeApp(id)}
+                onMaximizeChange={(max) => setMaximizedWindow(max ? id : null)}
               >
                 {app.component}
               </Window>
             );
           })}
 
+          {!hasFullscreen && (
           <Dock
             apps={allApps}
             openWindows={openWindows}
@@ -1063,6 +1090,7 @@ export default function Desktop() {
             onFocus={focusApp}
             dockRefs={dockRefs}
           />
+          )}
 
           {/* About This Mac modal */}
           <AnimatePresence>
