@@ -111,6 +111,32 @@ const storeApps: StoreApp[] = [
     size: "48 MB",
     builtIn: false,
   },
+  {
+    id: "snake",
+    name: "Snake",
+    subtitle: "Classic Arcade",
+    description: "The timeless Snake game! Guide your snake to eat food and grow longer, but don't crash into the walls or yourself. Use arrow keys or WASD to control.",
+    icon: <IoGameController className="text-2xl" />,
+    iconBg: "from-emerald-400 to-teal-600",
+    category: "Games",
+    rating: 4.7,
+    reviews: "9.1K",
+    size: "1 MB",
+    builtIn: false,
+  },
+  {
+    id: "dinojump",
+    name: "Dino Jump",
+    subtitle: "Endless Runner",
+    description: "An endless runner inspired by the classic offline dinosaur game. Jump over cacti as the speed increases. How far can you run? Press Space or click to jump.",
+    icon: <IoGameController className="text-2xl" />,
+    iconBg: "from-slate-400 to-slate-600",
+    category: "Games",
+    rating: 4.6,
+    reviews: "7.2K",
+    size: "1 MB",
+    builtIn: false,
+  },
 ];
 
 const categories = ["Discover", "Games", "Developer Tools", "Productivity", "Utilities", "Social Networking"];

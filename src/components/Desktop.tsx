@@ -14,6 +14,8 @@ import ContactApp from "./apps/ContactApp";
 import AppStoreApp from "./apps/AppStoreApp";
 import FlappyBirdApp from "./apps/FlappyBirdApp";
 import PvZ2App from "./apps/PvZ2App";
+import SnakeApp from "./apps/SnakeApp";
+import DinoJumpApp from "./apps/DinoJumpApp";
 
 interface AppConfig {
   id: string;
@@ -103,6 +105,26 @@ const downloadableApps: AppConfig[] = [
     component: <PvZ2App />,
     defaultPos: { x: 100, y: 40 },
     defaultSize: { w: 960, h: 640 },
+    isGame: true,
+  },
+  {
+    id: "snake",
+    title: "Snake",
+    icon: <IoGameController />,
+    iconBg: "from-emerald-400 to-teal-600",
+    component: <SnakeApp />,
+    defaultPos: { x: 180, y: 70 },
+    defaultSize: { w: 450, h: 520 },
+    isGame: true,
+  },
+  {
+    id: "dinojump",
+    title: "Dino Jump",
+    icon: <IoGameController />,
+    iconBg: "from-slate-400 to-slate-600",
+    component: <DinoJumpApp />,
+    defaultPos: { x: 140, y: 50 },
+    defaultSize: { w: 650, h: 400 },
     isGame: true,
   },
 ];
