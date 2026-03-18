@@ -30,23 +30,31 @@ function generateManifest(dir, extensions, urlPrefix, extraItems = []) {
     fs.mkdirSync(dir, { recursive: true });
   }
 
+  // Build a set of filenames that have external URLs (release assets)
+  const externalFilenames = new Set(
+    extraItems.map((item) => item.url.split("/").pop().toLowerCase())
+  );
+
   const files = fs.readdirSync(dir).filter((f) =>
     extensions.some((ext) => f.toLowerCase().endsWith(ext))
   );
 
-  const items = files.map((file, i) => ({
-    id: file.replace(/\.[^.]+$/, "").toLowerCase().replace(/\s+/g, "-"),
-    title: titleFromFilename(file),
-    url: `${urlPrefix}/${file}`,
-    color: colors[i % colors.length],
-  }));
+  // Only include local entries for files that DON'T have an external URL
+  const items = files
+    .filter((f) => !externalFilenames.has(f.toLowerCase()))
+    .map((file, i) => ({
+      id: file.replace(/\.[^.]+$/, "").toLowerCase().replace(/\s+/g, "-"),
+      title: titleFromFilename(file),
+      url: `${urlPrefix}/${file}`,
+      color: colors[i % colors.length],
+    }));
 
-  // Append externally-hosted items (e.g. GitHub Release assets)
+  // Always append externally-hosted items (e.g. GitHub Release assets)
   extraItems.forEach((item, i) => {
     items.push({
       id: item.id || item.title.toLowerCase().replace(/\s+/g, "-"),
       title: item.title,
-      url: item.url, // absolute URL, not prefixed with urlPrefix
+      url: item.url,
       color: item.color || colors[(items.length + i) % colors.length],
     });
   });
@@ -76,20 +84,18 @@ generateManifest(
 // so we add them as external entries with absolute URLs.
 const RELEASE_BASE = "https://github.com/MarcoEvanz/neoPortfolio/releases/download/roms-v1";
 const ndsExternalRoms = [
+  { title: "Pokemon Platinum", url: `${RELEASE_BASE}/pokemon_platinum.nds` },
   { title: "Pokemon Black", url: `${RELEASE_BASE}/pokemon_black.nds` },
   { title: "Pokemon White", url: `${RELEASE_BASE}/pokemon_white.nds` },
   { title: "Pokemon Heart Gold", url: `${RELEASE_BASE}/pokemon_heart_gold.nds` },
   { title: "Pokemon Soul Silver", url: `${RELEASE_BASE}/pokemon_soul_silver.nds` },
 ];
-// Filter out external ROMs that also exist locally (dev environment) to avoid duplicates
-const ndsDir = path.join(__dirname, "..", "public", "nds");
-const localNdsFiles = fs.existsSync(ndsDir)
-  ? fs.readdirSync(ndsDir).map((f) => f.toLowerCase())
-  : [];
-const ndsExtras = ndsExternalRoms.filter(
-  (r) => !localNdsFiles.includes(r.url.split("/").pop().toLowerCase())
+generateManifest(
+  path.join(__dirname, "..", "public", "nds"),
+  [".nds"],
+  "/nds",
+  ndsExternalRoms
 );
-generateManifest(ndsDir, [".nds"], "/nds", ndsExtras);
 
 // 3DS ROMs (.3ds, .cci, .cxi)
 generateManifest(
