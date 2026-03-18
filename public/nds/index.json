@@ -1,44 +1,44 @@
 [
   {
-    "id": "pokemon_black",
-    "title": "Pokemon Black",
-    "url": "/nds/pokemon_black.nds",
-    "color": "from-amber-600 to-red-700"
-  },
-  {
     "id": "pokemon_diamond",
     "title": "Pokemon Diamond",
     "url": "/nds/pokemon_diamond.nds",
-    "color": "from-blue-500 to-indigo-600"
-  },
-  {
-    "id": "pokemon_heart_gold",
-    "title": "Pokemon Heart Gold",
-    "url": "/nds/pokemon_heart_gold.nds",
-    "color": "from-emerald-500 to-teal-600"
+    "color": "from-amber-600 to-red-700"
   },
   {
     "id": "pokemon_pearl",
     "title": "Pokemon Pearl",
     "url": "/nds/pokemon_pearl.nds",
-    "color": "from-purple-500 to-pink-600"
+    "color": "from-blue-500 to-indigo-600"
   },
   {
-    "id": "pokemon_platinum",
+    "id": "pokemon-platinum",
     "title": "Pokemon Platinum",
-    "url": "/nds/pokemon_platinum.nds",
+    "url": "https://github.com/MarcoEvanz/neoPortfolio/releases/download/roms-v1/pokemon_platinum.nds",
+    "color": "from-emerald-500 to-teal-600"
+  },
+  {
+    "id": "pokemon-black",
+    "title": "Pokemon Black",
+    "url": "https://github.com/MarcoEvanz/neoPortfolio/releases/download/roms-v1/pokemon_black.nds",
     "color": "from-rose-500 to-red-600"
   },
   {
-    "id": "pokemon_soul_silver",
-    "title": "Pokemon Soul Silver",
-    "url": "/nds/pokemon_soul_silver.nds",
-    "color": "from-cyan-500 to-blue-600"
+    "id": "pokemon-white",
+    "title": "Pokemon White",
+    "url": "https://github.com/MarcoEvanz/neoPortfolio/releases/download/roms-v1/pokemon_white.nds",
+    "color": "from-orange-500 to-yellow-600"
   },
   {
-    "id": "pokemon_white",
-    "title": "Pokemon White",
-    "url": "/nds/pokemon_white.nds",
-    "color": "from-orange-500 to-yellow-600"
+    "id": "pokemon-heart-gold",
+    "title": "Pokemon Heart Gold",
+    "url": "https://github.com/MarcoEvanz/neoPortfolio/releases/download/roms-v1/pokemon_heart_gold.nds",
+    "color": "from-amber-600 to-red-700"
+  },
+  {
+    "id": "pokemon-soul-silver",
+    "title": "Pokemon Soul Silver",
+    "url": "https://github.com/MarcoEvanz/neoPortfolio/releases/download/roms-v1/pokemon_soul_silver.nds",
+    "color": "from-emerald-500 to-teal-600"
   }
 ]
