@@ -25,7 +25,7 @@ function titleFromFilename(filename) {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function generateManifest(dir, extensions, urlPrefix) {
+function generateManifest(dir, extensions, urlPrefix, extraItems = []) {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
@@ -40,6 +40,16 @@ function generateManifest(dir, extensions, urlPrefix) {
     url: `${urlPrefix}/${file}`,
     color: colors[i % colors.length],
   }));
+
+  // Append externally-hosted items (e.g. GitHub Release assets)
+  extraItems.forEach((item, i) => {
+    items.push({
+      id: item.id || item.title.toLowerCase().replace(/\s+/g, "-"),
+      title: item.title,
+      url: item.url, // absolute URL, not prefixed with urlPrefix
+      color: item.color || colors[(items.length + i) % colors.length],
+    });
+  });
 
   const outputFile = path.join(dir, "index.json");
   fs.writeFileSync(outputFile, JSON.stringify(items, null, 2));
@@ -60,12 +70,26 @@ generateManifest(
   "/roms"
 );
 
-// NDS ROMs (.nds)
-generateManifest(
-  path.join(__dirname, "..", "public", "nds"),
-  [".nds"],
-  "/nds"
+// NDS ROMs (.nds) — local files + large ROMs hosted on GitHub Releases
+// Large ROMs (>100MB) are gitignored and hosted as release assets instead.
+// The manifest script skips gitignored files (they won't be in the dir on CI),
+// so we add them as external entries with absolute URLs.
+const RELEASE_BASE = "https://github.com/MarcoEvanz/neoPortfolio/releases/download/roms-v1";
+const ndsExternalRoms = [
+  { title: "Pokemon Black", url: `${RELEASE_BASE}/pokemon_black.nds` },
+  { title: "Pokemon White", url: `${RELEASE_BASE}/pokemon_white.nds` },
+  { title: "Pokemon Heart Gold", url: `${RELEASE_BASE}/pokemon_heart_gold.nds` },
+  { title: "Pokemon Soul Silver", url: `${RELEASE_BASE}/pokemon_soul_silver.nds` },
+];
+// Filter out external ROMs that also exist locally (dev environment) to avoid duplicates
+const ndsDir = path.join(__dirname, "..", "public", "nds");
+const localNdsFiles = fs.existsSync(ndsDir)
+  ? fs.readdirSync(ndsDir).map((f) => f.toLowerCase())
+  : [];
+const ndsExtras = ndsExternalRoms.filter(
+  (r) => !localNdsFiles.includes(r.url.split("/").pop().toLowerCase())
 );
+generateManifest(ndsDir, [".nds"], "/nds", ndsExtras);
 
 // 3DS ROMs (.3ds, .cci, .cxi)
 generateManifest(

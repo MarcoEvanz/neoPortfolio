@@ -28,7 +28,7 @@ export default function GBAEmulatorApp() {
     fetch(`${base}/roms/index.json`)
       .then((r) => r.json())
       .then((data: RomEntry[]) =>
-        setBundledRoms(data.map((r) => ({ ...r, url: `${base}${r.url}` })))
+        setBundledRoms(data.map((r) => ({ ...r, url: r.url.startsWith("http") ? r.url : `${base}${r.url}` })))
       )
       .catch(() => {});
   }, []);

@@ -27,7 +27,7 @@ export default function N3DSEmulatorApp() {
     fetch(`${base}/3ds/index.json`)
       .then((r) => r.json())
       .then((data: RomEntry[]) =>
-        setBundledRoms(data.map((r) => ({ ...r, url: `${base}${r.url}` })))
+        setBundledRoms(data.map((r) => ({ ...r, url: r.url.startsWith("http") ? r.url : `${base}${r.url}` })))
       )
       .catch(() => {});
   }, []);
