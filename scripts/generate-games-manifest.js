@@ -89,6 +89,8 @@ const ndsExternalRoms = [
   { title: "Pokemon White", url: `${RELEASE_BASE}/pokemon_white.nds` },
   { title: "Pokemon Heart Gold", url: `${RELEASE_BASE}/pokemon_heart_gold.nds` },
   { title: "Pokemon Soul Silver", url: `${RELEASE_BASE}/pokemon_soul_silver.nds` },
+  { title: "Pokemon Black 2", url: `${RELEASE_BASE}/pokemon_black_2.nds` },
+  { title: "Pokemon White 2", url: `${RELEASE_BASE}/pokemon_white_2.nds` },
 ];
 generateManifest(
   path.join(__dirname, "..", "public", "nds"),

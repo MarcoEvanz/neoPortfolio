@@ -40,5 +40,17 @@
     "title": "Pokemon Soul Silver",
     "url": "https://github.com/MarcoEvanz/neoPortfolio/releases/download/roms-v1/pokemon_soul_silver.nds",
     "color": "from-emerald-500 to-teal-600"
+  },
+  {
+    "id": "pokemon-black-2",
+    "title": "Pokemon Black 2",
+    "url": "https://github.com/MarcoEvanz/neoPortfolio/releases/download/roms-v1/pokemon_black_2.nds",
+    "color": "from-rose-500 to-red-600"
+  },
+  {
+    "id": "pokemon-white-2",
+    "title": "Pokemon White 2",
+    "url": "https://github.com/MarcoEvanz/neoPortfolio/releases/download/roms-v1/pokemon_white_2.nds",
+    "color": "from-orange-500 to-yellow-600"
   }
 ]
