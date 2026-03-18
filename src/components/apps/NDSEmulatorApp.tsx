@@ -63,7 +63,8 @@ export default function NDSEmulatorApp() {
       setActiveRom({ title, url: "" });
       setView("player");
       try {
-        const resp = await fetch(url);
+        const proxiedUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+        const resp = await fetch(proxiedUrl);
         if (!resp.ok) throw new Error("Download failed");
         const contentLength = resp.headers.get("content-length");
         const total = contentLength ? parseInt(contentLength, 10) : 0;
