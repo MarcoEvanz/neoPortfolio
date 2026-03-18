@@ -1,12 +1,10 @@
 /**
- * Scans public/games/ for .swf files and writes public/games/index.json
+ * Scans public/games/ for .swf files and public/roms/ for ROM files,
+ * then writes index.json manifests for each.
  * Run this before build, or add to your build script.
  */
 const fs = require("fs");
 const path = require("path");
-
-const gamesDir = path.join(__dirname, "..", "public", "games");
-const outputFile = path.join(gamesDir, "index.json");
 
 // Color palette for game cards
 const colors = [
@@ -22,24 +20,42 @@ const colors = [
 
 function titleFromFilename(filename) {
   return filename
-    .replace(/\.swf$/i, "")
+    .replace(/\.[^.]+$/, "") // strip any extension
     .replace(/[_-]/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-// Ensure directory exists
-if (!fs.existsSync(gamesDir)) {
-  fs.mkdirSync(gamesDir, { recursive: true });
+function generateManifest(dir, extensions, urlPrefix) {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+
+  const files = fs.readdirSync(dir).filter((f) =>
+    extensions.some((ext) => f.toLowerCase().endsWith(ext))
+  );
+
+  const items = files.map((file, i) => ({
+    id: file.replace(/\.[^.]+$/, "").toLowerCase().replace(/\s+/g, "-"),
+    title: titleFromFilename(file),
+    url: `${urlPrefix}/${file}`,
+    color: colors[i % colors.length],
+  }));
+
+  const outputFile = path.join(dir, "index.json");
+  fs.writeFileSync(outputFile, JSON.stringify(items, null, 2));
+  console.log(`Generated ${outputFile} with ${items.length} file(s)`);
 }
 
-const files = fs.readdirSync(gamesDir).filter((f) => f.toLowerCase().endsWith(".swf"));
+// Flash games (.swf)
+generateManifest(
+  path.join(__dirname, "..", "public", "games"),
+  [".swf"],
+  "/games"
+);
 
-const games = files.map((file, i) => ({
-  id: file.replace(/\.swf$/i, "").toLowerCase().replace(/\s+/g, "-"),
-  title: titleFromFilename(file),
-  url: `/games/${file}`,
-  color: colors[i % colors.length],
-}));
-
-fs.writeFileSync(outputFile, JSON.stringify(games, null, 2));
-console.log(`Generated ${outputFile} with ${games.length} game(s)`);
+// GBA ROMs (.gba, .gb, .gbc, .zip, .7z)
+generateManifest(
+  path.join(__dirname, "..", "public", "roms"),
+  [".gba", ".gb", ".gbc"],
+  "/roms"
+);

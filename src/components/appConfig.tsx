@@ -13,6 +13,7 @@ import PvZ2App from "./apps/PvZ2App";
 import SnakeApp from "./apps/SnakeApp";
 import DinoJumpApp from "./apps/DinoJumpApp";
 import FlashPlayerApp from "./apps/FlashPlayerApp";
+import GBAEmulatorApp from "./apps/GBAEmulatorApp";
 
 export interface AppConfig {
   id: string;
@@ -130,6 +131,15 @@ export const downloadableApps: AppConfig[] = [
     iconBg: "from-red-500 to-orange-500",
     component: <FlashPlayerApp />,
     defaultPos: { x: 100, y: 40 },
+    defaultSize: { w: 800, h: 600 },
+  },
+  {
+    id: "gbaemulator",
+    title: "GBA Emulator",
+    icon: <IoGameController />,
+    iconBg: "from-indigo-500 to-purple-600",
+    component: <GBAEmulatorApp />,
+    defaultPos: { x: 120, y: 50 },
     defaultSize: { w: 800, h: 600 },
   },
 ];

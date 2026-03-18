@@ -151,6 +151,19 @@ const storeApps: StoreApp[] = [
     size: "2 MB",
     builtIn: false,
   },
+  {
+    id: "gbaemulator",
+    name: "GBA Emulator",
+    subtitle: "Game Boy Advance Player",
+    description: "Play Game Boy Advance games in your browser with EmulatorJS. Load ROMs from your library, upload files, or enter a URL. Supports save states, custom controls, and fullscreen.",
+    icon: <IoGameController className="text-2xl" />,
+    iconBg: "from-indigo-500 to-purple-600",
+    category: "Games",
+    rating: 4.8,
+    reviews: "11.2K",
+    size: "3 MB",
+    builtIn: false,
+  },
 ];
 
 const categories = ["Discover", "Games", "Developer Tools", "Productivity", "Utilities", "Social Networking"];
