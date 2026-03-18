@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useDesktop } from "../DesktopContext";
 
 const W = 600;
 const H = 200;
@@ -179,6 +180,7 @@ interface Cloud {
 }
 
 export default function DinoJumpApp() {
+  const { isMobile } = useDesktop();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [gameState, setGameState] = useState<"idle" | "playing" | "dead">("idle");
   const [score, setScore] = useState(0);
@@ -504,6 +506,40 @@ export default function DinoJumpApp() {
       window.removeEventListener("keyup", onUp);
     };
   }, [handleAction]);
+
+  if (isMobile) {
+    return (
+      <div
+        className="flex flex-col h-full select-none"
+        style={{ background: "#f7f7f7" }}
+        onTouchStart={handleAction}
+      >
+        {/* Canvas fills width, vertically centered */}
+        <div className="flex-1 flex items-center justify-center px-2">
+          <canvas
+            ref={canvasRef}
+            width={W}
+            height={H}
+            className="w-full"
+            style={{ aspectRatio: `${W}/${H}` }}
+          />
+        </div>
+
+        {/* Tap hints */}
+        <div className="shrink-0 pb-6 text-center">
+          {gameState === "idle" && (
+            <p className="text-xs text-gray-400">Tap anywhere to start</p>
+          )}
+          {gameState === "playing" && (
+            <p className="text-xs text-gray-400 animate-pulse">Tap anywhere to jump</p>
+          )}
+          {gameState === "dead" && (
+            <p className="text-xs text-gray-400">Tap to retry</p>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center justify-center h-full bg-[#f7f7f7] select-none" style={{ background: "#f7f7f7" }}>

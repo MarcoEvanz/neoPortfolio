@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   SiNextdotjs,
   SiReact,
@@ -16,6 +17,7 @@ import {
 } from "react-icons/si";
 import { TbBrandCSharp } from "react-icons/tb";
 import type { IconType } from "react-icons";
+import { useDesktop } from "../DesktopContext";
 
 interface Skill {
   name: string;
@@ -151,6 +153,7 @@ function LiveGraph({
 }
 
 export default function SkillsApp() {
+  const { isMobile } = useDesktop();
   const [tab, setTab] = useState<Tab>("cpu");
   const [sortKey, setSortKey] = useState<SortKey>("proficiency");
   const [sortAsc, setSortAsc] = useState(false);
@@ -222,37 +225,25 @@ export default function SkillsApp() {
       <span className="text-primary-400 ml-0.5">{sortAsc ? "▲" : "▼"}</span>
     ) : null;
 
-  return (
-    <div className="h-full flex flex-col" style={{ background: "rgba(20,24,36,0.95)" }}>
-      {/* macOS-style segmented tabs */}
-      <div className="flex items-center justify-center py-2 px-3 shrink-0 border-b border-white/5">
-        <div
-          className="inline-flex rounded-md p-0.5"
-          style={{ background: "rgba(255,255,255,0.06)" }}
-        >
-          {(
-            [
-              { key: "cpu", label: "CPU (Skills)" },
-              { key: "memory", label: "Memory" },
-              { key: "energy", label: "Energy" },
-            ] as { key: Tab; label: string }[]
-          ).map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`px-4 py-1 rounded text-[11px] font-medium transition-all ${
-                tab === t.key
-                  ? "bg-white/10 text-white shadow-sm"
-                  : "text-dark-400 hover:text-dark-200"
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-      </div>
+  const tabDirRef = useRef(0);
+  const tabKeys: Tab[] = ["cpu", "memory", "energy"];
+  const tabLabels = ["CPU (Skills)", "Memory", "Energy"];
 
-      {tab === "cpu" ? (
+  const handleTab = (t: Tab) => {
+    const oldIdx = tabKeys.indexOf(tab);
+    const newIdx = tabKeys.indexOf(t);
+    tabDirRef.current = newIdx > oldIdx ? 1 : -1;
+    setTab(t);
+  };
+
+  const slideVariants = {
+    enter: (d: number) => ({ x: d > 0 ? "100%" : "-100%", opacity: 0.3 }),
+    center: { x: "0%", opacity: 1 },
+    exit: (d: number) => ({ x: d > 0 ? "-35%" : "35%", opacity: 0 }),
+  };
+  const slideTrans = { duration: 0.3, ease: [0.32, 0.72, 0, 1] as const };
+
+  const cpuContent = (
         /* ─── CPU (Process List) ─── */
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Column headers */}
@@ -266,15 +257,17 @@ export default function SkillsApp() {
             >
               <SortIndicator col="name" />
             </ColHeader>
-            <ColHeader
-              label="Category"
-              className="w-20"
-              col="category"
-              sortKey={sortKey}
-              onSort={handleSort}
-            >
-              <SortIndicator col="category" />
-            </ColHeader>
+            {!isMobile && (
+              <ColHeader
+                label="Category"
+                className="w-20"
+                col="category"
+                sortKey={sortKey}
+                onSort={handleSort}
+              >
+                <SortIndicator col="category" />
+              </ColHeader>
+            )}
             <ColHeader
               label="Status"
               className="w-16"
@@ -293,15 +286,17 @@ export default function SkillsApp() {
             >
               <SortIndicator col="proficiency" />
             </ColHeader>
-            <ColHeader
-              label="Threads"
-              className="w-16 text-right"
-              col="threads"
-              sortKey={sortKey}
-              onSort={handleSort}
-            >
-              <SortIndicator col="threads" />
-            </ColHeader>
+            {!isMobile && (
+              <ColHeader
+                label="Threads"
+                className="w-16 text-right"
+                col="threads"
+                sortKey={sortKey}
+                onSort={handleSort}
+              >
+                <SortIndicator col="threads" />
+              </ColHeader>
+            )}
           </div>
 
           {/* Rows */}
@@ -330,11 +325,13 @@ export default function SkillsApp() {
                       {skill.name}
                     </span>
                   </div>
-                  <div className="w-20">
-                    <span className="text-[11px] text-dark-500">
-                      {skill.category}
-                    </span>
-                  </div>
+                  {!isMobile && (
+                    <div className="w-20">
+                      <span className="text-[11px] text-dark-500">
+                        {skill.category}
+                      </span>
+                    </div>
+                  )}
                   <div className="w-16">
                     <span
                       className={`text-[11px] ${
@@ -363,18 +360,20 @@ export default function SkillsApp() {
                       {Math.round(live).toFixed(1)}
                     </span>
                   </div>
-                  <div className="w-16 text-right">
-                    <span className="text-[12px] text-dark-400 font-mono">
-                      {skill.threads}
-                    </span>
-                  </div>
+                  {!isMobile && (
+                    <div className="w-16 text-right">
+                      <span className="text-[12px] text-dark-400 font-mono">
+                        {skill.threads}
+                      </span>
+                    </div>
+                  )}
                 </button>
               );
             })}
           </div>
 
           {/* Bottom summary bar */}
-          <div className="shrink-0 flex items-center justify-between px-3 py-2 border-t border-white/5 bg-white/[0.02]">
+          <div className={`shrink-0 flex ${isMobile ? "flex-col gap-1 px-3 py-2" : "items-center justify-between px-3 py-2"} border-t border-white/5 bg-white/[0.02]`}>
             <div className="flex gap-5">
               <StatItem label="Processes" value={String(skills.length)} />
               <StatItem label="Threads" value={String(totalThreads)} />
@@ -398,7 +397,9 @@ export default function SkillsApp() {
             </div>
           </div>
         </div>
-      ) : tab === "memory" ? (
+  );
+
+  const memoryContent = (
         /* ─── Memory (Visual overview) ─── */
         <div className="flex-1 overflow-auto p-4 space-y-4">
           <LiveGraph
@@ -408,7 +409,7 @@ export default function SkillsApp() {
             label="Memory Pressure"
             valueLabel={`${totalProf}% used`}
           />
-          <div className="grid grid-cols-3 gap-3">
+          <div className={`grid ${isMobile ? "grid-cols-1" : "grid-cols-3"} gap-3`}>
             {[
               { label: "Frontend", val: "82%", color: "#3b82f6", sub: "7 skills" },
               { label: "Game Dev", val: "72%", color: "#a855f7", sub: "2 skills" },
@@ -447,7 +448,7 @@ export default function SkillsApp() {
               <div className="h-full bg-[#22c55e]" style={{ width: "15%" }} />
               <div className="h-full bg-white/5" style={{ width: "20%" }} />
             </div>
-            <div className="flex gap-4 mt-2">
+            <div className={`flex ${isMobile ? "flex-col gap-2" : "gap-4"} mt-2`}>
               {[
                 { label: "App Memory", color: "#3b82f6", val: "5.4 GB" },
                 { label: "Wired", color: "#a855f7", val: "2.8 GB" },
@@ -467,7 +468,9 @@ export default function SkillsApp() {
             </div>
           </div>
         </div>
-      ) : (
+  );
+
+  const energyContent = (
         /* ─── Energy (Per-skill graphs) ─── */
         <div className="flex-1 overflow-auto p-4 space-y-3">
           <LiveGraph
@@ -520,7 +523,50 @@ export default function SkillsApp() {
             </div>
           ))}
         </div>
-      )}
+  );
+
+  const tabContent = tab === "cpu" ? cpuContent : tab === "memory" ? memoryContent : energyContent;
+
+  return (
+    <div className="h-full flex flex-col" style={{ background: "rgba(20,24,36,0.95)" }}>
+      {/* macOS-style segmented tabs */}
+      <div className="flex items-center justify-center py-2 px-3 shrink-0 border-b border-white/5">
+        <div
+          className="inline-flex rounded-md p-0.5"
+          style={{ background: "rgba(255,255,255,0.06)" }}
+        >
+          {tabKeys.map((key, i) => (
+            <button
+              key={key}
+              onClick={() => handleTab(key)}
+              className={`px-4 py-1 rounded text-[11px] font-medium transition-all ${
+                tab === key
+                  ? "bg-white/10 text-white shadow-sm"
+                  : "text-dark-400 hover:text-dark-200"
+              }`}
+            >
+              {tabLabels[i]}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex-1 relative overflow-hidden">
+        <AnimatePresence initial={false} custom={tabDirRef.current}>
+          <motion.div
+            key={tab}
+            custom={tabDirRef.current}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={slideTrans}
+            className="absolute inset-0"
+          >
+            {tabContent}
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

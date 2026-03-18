@@ -1,17 +1,20 @@
 "use client";
 
+import { useDesktop } from "../DesktopContext";
+
 export default function AboutApp() {
+  const { isMobile } = useDesktop();
   return (
-    <div className="p-6 space-y-6">
+    <div className={`${isMobile ? "p-4" : "p-6"} space-y-6`}>
       {/* Profile header */}
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-4">
         <img
           src="https://avatars.githubusercontent.com/u/130949494?v=4"
           alt="Phạm Hoàng Long"
-          className="w-20 h-20 rounded-2xl object-cover shrink-0"
+          className={`${isMobile ? "w-16 h-16 rounded-xl" : "w-20 h-20 rounded-2xl"} object-cover shrink-0`}
         />
         <div>
-          <h1 className="text-xl font-bold text-white">Phạm Hoàng Long</h1>
+          <h1 className={`${isMobile ? "text-lg" : "text-xl"} font-bold text-white`}>Phạm Hoàng Long</h1>
           <p className="text-primary-400 text-sm font-medium">
             Web Developer & Game Developer
           </p>

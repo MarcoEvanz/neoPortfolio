@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useDesktop } from "../DesktopContext";
 
 const CANVAS_W = 400;
 const CANVAS_H = 500;
@@ -19,6 +20,7 @@ interface Pipe {
 }
 
 export default function FlappyBirdApp() {
+  const { isMobile } = useDesktop();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [gameState, setGameState] = useState<"idle" | "playing" | "dead">("idle");
   const [score, setScore] = useState(0);
@@ -214,7 +216,7 @@ export default function FlappyBirdApp() {
         ctx.fillText("Flappy Bird", CANVAS_W / 2, CANVAS_H / 2 - 30);
         ctx.font = "16px -apple-system, sans-serif";
         ctx.fillStyle = "rgba(255,255,255,0.6)";
-        ctx.fillText("Click or press Space to start", CANVAS_W / 2, CANVAS_H / 2 + 10);
+        ctx.fillText("Tap or press Space to start", CANVAS_W / 2, CANVAS_H / 2 + 10);
       }
 
       if (gameStateRef.current === "dead") {
@@ -228,7 +230,7 @@ export default function FlappyBirdApp() {
         ctx.fillText(`Score: ${scoreRef.current}`, CANVAS_W / 2, CANVAS_H / 2);
         ctx.font = "16px -apple-system, sans-serif";
         ctx.fillStyle = "rgba(255,255,255,0.5)";
-        ctx.fillText("Click to try again", CANVAS_W / 2, CANVAS_H / 2 + 35);
+        ctx.fillText("Tap to try again", CANVAS_W / 2, CANVAS_H / 2 + 35);
       }
 
       animId = requestAnimationFrame(draw);
@@ -249,6 +251,28 @@ export default function FlappyBirdApp() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [jump]);
+
+  if (isMobile) {
+    return (
+      <div className="flex flex-col h-full select-none" onTouchStart={jump}>
+        {/* Score bar */}
+        <div className="flex items-center justify-between px-4 py-2 shrink-0 bg-[#0f0f1a]">
+          <span className="text-[12px] text-white/40">Score: {score}</span>
+          <span className="text-[12px] text-yellow-400/60">Best: {best}</span>
+        </div>
+        {/* Canvas with matching ground-color background to fill any gap */}
+        <div className="flex-1 min-h-0 flex items-start justify-center overflow-hidden bg-[#2a5e3f]">
+          <canvas
+            ref={canvasRef}
+            width={CANVAS_W}
+            height={CANVAS_H}
+            className="w-full"
+            style={{ aspectRatio: `${CANVAS_W}/${CANVAS_H}` }}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center justify-center h-full bg-[#0f0f1a] select-none">

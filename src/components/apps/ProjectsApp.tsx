@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { HiExternalLink, HiCode } from "react-icons/hi";
+import { useState, useRef } from "react";
+import { HiExternalLink, HiCode, HiChevronRight } from "react-icons/hi";
+import { motion, AnimatePresence } from "framer-motion";
+import { useDesktop } from "../DesktopContext";
 
 const projects = [
   {
@@ -59,11 +61,149 @@ const projects = [
 type Filter = "All" | "Web" | "Game";
 
 export default function ProjectsApp() {
+  const { isMobile } = useDesktop();
   const [filter, setFilter] = useState<Filter>("All");
   const [selected, setSelected] = useState<number | null>(null);
 
   const filtered =
     filter === "All" ? projects : projects.filter((p) => p.category === filter);
+
+  // +1 = forward (enter from right, exit to left), -1 = back (enter from left, exit to right)
+  const dirRef = useRef(1);
+  const filters: Filter[] = ["All", "Web", "Game"];
+
+  const slideVariants = {
+    enter: (d: number) => ({ x: d > 0 ? "100%" : "-100%", opacity: 0.4 }),
+    center: { x: "0%", opacity: 1 },
+    exit: (d: number) => ({ x: d > 0 ? "-35%" : "35%", opacity: 0 }),
+  };
+
+  const slideTrans = { duration: 0.32, ease: [0.32, 0.72, 0, 1] as const };
+
+  if (isMobile) {
+    const handleFilter = (f: Filter) => {
+      const oldIdx = filters.indexOf(filter);
+      const newIdx = filters.indexOf(f);
+      dirRef.current = (selected && f === filter) ? -1 : (newIdx > oldIdx ? 1 : -1);
+      setFilter(f);
+      setSelected(null);
+    };
+
+    return (
+      <div className="h-full flex flex-col overflow-hidden">
+        {/* Filter pills */}
+        <div className="flex gap-2 px-4 py-3 shrink-0 border-b border-white/5">
+          {filters.map((f) => (
+            <button
+              key={f}
+              onClick={() => handleFilter(f)}
+              className={`px-4 py-1.5 rounded-full text-[13px] font-medium transition-all ${
+                filter === f
+                  ? "bg-primary-500 text-white"
+                  : "bg-white/5 text-dark-400"
+              }`}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex-1 relative overflow-hidden">
+          <AnimatePresence initial={false} custom={dirRef.current}>
+            {selected !== null ? (
+              <motion.div
+                key={`detail-${selected}`}
+                custom={dirRef.current}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={slideTrans}
+                className="absolute inset-0 overflow-auto p-4 space-y-4"
+              >
+                <div
+                  className={`w-full h-36 rounded-2xl bg-gradient-to-br ${filtered[selected].color} opacity-60`}
+                />
+                <div>
+                  <span className="text-[11px] font-semibold text-dark-500 uppercase tracking-wider">
+                    {filtered[selected].category}
+                  </span>
+                  <h3 className="text-lg font-bold text-white mt-1">
+                    {filtered[selected].title}
+                  </h3>
+                </div>
+                <p className="text-[13px] text-dark-400 leading-relaxed">
+                  {filtered[selected].description}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {filtered[selected].tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-2.5 py-1 text-[11px] text-dark-300 bg-white/5 rounded-lg"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <a
+                    href={filtered[selected].demo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[13px] font-medium bg-primary-600 text-white rounded-xl transition-colors"
+                  >
+                    <HiExternalLink size={14} />
+                    Demo
+                  </a>
+                  <a
+                    href={filtered[selected].code}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[13px] font-medium border border-white/10 text-dark-300 rounded-xl transition-colors"
+                  >
+                    <HiCode size={14} />
+                    Code
+                  </a>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key={`list-${filter}`}
+                custom={dirRef.current}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={slideTrans}
+                className="absolute inset-0 overflow-auto"
+              >
+                {filtered.map((project, i) => (
+                  <button
+                    key={project.title}
+                    onClick={() => { dirRef.current = 1; setSelected(i); }}
+                    className="w-full flex items-center gap-3 px-4 py-3.5 border-b border-white/[0.04] active:bg-white/5 transition-colors"
+                  >
+                    <div
+                      className={`w-11 h-11 rounded-xl bg-gradient-to-br ${project.color} opacity-80 shrink-0`}
+                    />
+                    <div className="flex-1 min-w-0 text-left">
+                      <p className="text-[15px] text-white font-medium truncate">
+                        {project.title}
+                      </p>
+                      <p className="text-[12px] text-dark-500 mt-0.5">
+                        {project.tags.join(" · ")}
+                      </p>
+                    </div>
+                    <HiChevronRight className="text-dark-600 text-lg shrink-0" />
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex">
@@ -76,6 +216,9 @@ export default function ProjectsApp() {
           <button
             key={f}
             onClick={() => {
+              const oldIdx = filters.indexOf(filter);
+              const newIdx = filters.indexOf(f);
+              dirRef.current = (selected && f === filter) ? -1 : (newIdx > oldIdx ? 1 : -1);
               setFilter(f);
               setSelected(null);
             }}
@@ -100,32 +243,45 @@ export default function ProjectsApp() {
       {/* Main area */}
       <div className="flex-1 flex">
         {/* Project list */}
-        <div className="flex-1 p-3 space-y-1.5 overflow-auto">
-          {filtered.map((project, i) => (
-            <button
-              key={project.title}
-              onClick={() => setSelected(i)}
-              className={`w-full text-left p-3 rounded-lg transition-all ${
-                selected === i
-                  ? "bg-primary-500/10 ring-1 ring-primary-500/20"
-                  : "hover:bg-white/[0.03]"
-              }`}
+        <div className="flex-1 relative overflow-hidden">
+          <AnimatePresence initial={false} custom={dirRef.current}>
+            <motion.div
+              key={filter}
+              custom={dirRef.current}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={slideTrans}
+              className="absolute inset-0 p-3 space-y-1.5 overflow-auto"
             >
-              <div className="flex items-center gap-3">
-                <div
-                  className={`w-8 h-8 rounded-lg bg-gradient-to-br ${project.color} opacity-80 shrink-0`}
-                />
-                <div className="min-w-0">
-                  <p className="text-sm text-white font-medium truncate">
-                    {project.title}
-                  </p>
-                  <p className="text-[11px] text-dark-500">
-                    {project.tags.join(" · ")}
-                  </p>
-                </div>
-              </div>
-            </button>
-          ))}
+              {filtered.map((project, i) => (
+                <button
+                  key={project.title}
+                  onClick={() => setSelected(i)}
+                  className={`w-full text-left p-3 rounded-lg transition-all ${
+                    selected === i
+                      ? "bg-primary-500/10 ring-1 ring-primary-500/20"
+                      : "hover:bg-white/[0.03]"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-8 h-8 rounded-lg bg-gradient-to-br ${project.color} opacity-80 shrink-0`}
+                    />
+                    <div className="min-w-0">
+                      <p className="text-sm text-white font-medium truncate">
+                        {project.title}
+                      </p>
+                      <p className="text-[11px] text-dark-500">
+                        {project.tags.join(" · ")}
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         {/* Detail panel */}

@@ -2,10 +2,12 @@
 
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { HiMail } from "react-icons/hi";
+import { useDesktop } from "../DesktopContext";
 
 export default function ContactApp() {
+  const { isMobile } = useDesktop();
   return (
-    <div className="p-6 space-y-5">
+    <div className={`${isMobile ? "p-4" : "p-6"} space-y-5`}>
       <div>
         <h2 className="text-sm font-semibold text-white mb-1">Get In Touch</h2>
         <p className="text-xs text-dark-400">
@@ -78,19 +80,19 @@ export default function ContactApp() {
         <input
           type="text"
           placeholder="Your name"
-          className="w-full px-3 py-2 bg-white/[0.03] border border-white/5 focus:border-primary-500/30 rounded-lg text-xs text-white placeholder-dark-600 outline-none transition-colors"
+          className={`w-full px-3 ${isMobile ? "py-3 text-sm rounded-xl" : "py-2 text-xs rounded-lg"} bg-white/[0.03] border border-white/5 focus:border-primary-500/30 text-white placeholder-dark-600 outline-none transition-colors`}
         />
         <input
           type="email"
           placeholder="your@email.com"
-          className="w-full px-3 py-2 bg-white/[0.03] border border-white/5 focus:border-primary-500/30 rounded-lg text-xs text-white placeholder-dark-600 outline-none transition-colors"
+          className={`w-full px-3 ${isMobile ? "py-3 text-sm rounded-xl" : "py-2 text-xs rounded-lg"} bg-white/[0.03] border border-white/5 focus:border-primary-500/30 text-white placeholder-dark-600 outline-none transition-colors`}
         />
         <textarea
           rows={3}
           placeholder="Your message..."
-          className="w-full px-3 py-2 bg-white/[0.03] border border-white/5 focus:border-primary-500/30 rounded-lg text-xs text-white placeholder-dark-600 outline-none transition-colors resize-none"
+          className={`w-full px-3 ${isMobile ? "py-3 text-sm rounded-xl" : "py-2 text-xs rounded-lg"} bg-white/[0.03] border border-white/5 focus:border-primary-500/30 text-white placeholder-dark-600 outline-none transition-colors resize-none`}
         />
-        <button className="w-full py-2 bg-primary-600 hover:bg-primary-500 text-white text-xs font-medium rounded-lg transition-colors">
+        <button className={`w-full ${isMobile ? "py-3 text-sm rounded-xl" : "py-2 text-xs rounded-lg"} bg-primary-600 hover:bg-primary-500 text-white font-medium transition-colors`}>
           Send Message
         </button>
       </form>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useDesktop } from "../DesktopContext";
 
 const CELL = 20;
 const COLS = 20;
@@ -21,6 +22,7 @@ function randomFood(snake: Pos[]): Pos {
 }
 
 export default function SnakeApp() {
+  const { isMobile } = useDesktop();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [gameState, setGameState] = useState<"idle" | "playing" | "dead">("idle");
   const [score, setScore] = useState(0);
@@ -95,27 +97,31 @@ export default function SnakeApp() {
       ctx.fillStyle = "#fff";
       ctx.font = "bold 24px system-ui";
       ctx.textAlign = "center";
-      ctx.fillText("Snake", W / 2, H / 2 - 20);
-      ctx.font = "13px system-ui";
-      ctx.fillStyle = "rgba(255,255,255,0.5)";
-      ctx.fillText("Press Space or Click to start", W / 2, H / 2 + 10);
-      ctx.fillText("Arrow keys / WASD to move", W / 2, H / 2 + 30);
+      ctx.fillText("Snake", W / 2, H / 2 - 10);
+      if (!isMobile) {
+        ctx.font = "13px system-ui";
+        ctx.fillStyle = "rgba(255,255,255,0.5)";
+        ctx.fillText("Press Space or Click to start", W / 2, H / 2 + 15);
+        ctx.fillText("Arrow keys / WASD to move", W / 2, H / 2 + 35);
+      }
     } else if (gameStateRef.current === "dead") {
       ctx.fillStyle = "rgba(0,0,0,0.7)";
       ctx.fillRect(0, 0, W, H);
       ctx.fillStyle = "#ef4444";
       ctx.font = "bold 22px system-ui";
       ctx.textAlign = "center";
-      ctx.fillText("Game Over", W / 2, H / 2 - 30);
+      ctx.fillText("Game Over", W / 2, H / 2 - 20);
       ctx.fillStyle = "#fff";
       ctx.font = "16px system-ui";
-      ctx.fillText(`Score: ${scoreRef.current}`, W / 2, H / 2 + 5);
-      ctx.fillStyle = "rgba(255,255,255,0.4)";
-      ctx.font = "12px system-ui";
-      ctx.fillText(`Best: ${Math.max(scoreRef.current, best)}`, W / 2, H / 2 + 25);
-      ctx.fillText("Click or Space to retry", W / 2, H / 2 + 50);
+      ctx.fillText(`Score: ${scoreRef.current}`, W / 2, H / 2 + 10);
+      if (!isMobile) {
+        ctx.fillStyle = "rgba(255,255,255,0.4)";
+        ctx.font = "12px system-ui";
+        ctx.fillText(`Best: ${Math.max(scoreRef.current, best)}`, W / 2, H / 2 + 30);
+        ctx.fillText("Click or Space to retry", W / 2, H / 2 + 55);
+      }
     }
-  }, [best]);
+  }, [best, isMobile]);
 
   const tick = useCallback(() => {
     if (gameStateRef.current !== "playing") return;
@@ -182,6 +188,15 @@ export default function SnakeApp() {
     }
   }, [startGame]);
 
+  const changeDir = useCallback((newDir: Dir) => {
+    if (gameStateRef.current !== "playing") return;
+    const d = dir.current;
+    if (newDir === "up" && d !== "down") nextDir.current = "up";
+    if (newDir === "down" && d !== "up") nextDir.current = "down";
+    if (newDir === "left" && d !== "right") nextDir.current = "left";
+    if (newDir === "right" && d !== "left") nextDir.current = "right";
+  }, []);
+
   // Game loop
   useEffect(() => {
     if (gameState === "playing") {
@@ -206,21 +221,92 @@ export default function SnakeApp() {
         return;
       }
       if (gameStateRef.current !== "playing") return;
-      const d = dir.current;
       switch (e.key) {
         case "ArrowUp": case "w": case "W":
-          if (d !== "down") nextDir.current = "up"; break;
+          changeDir("up"); break;
         case "ArrowDown": case "s": case "S":
-          if (d !== "up") nextDir.current = "down"; break;
+          changeDir("down"); break;
         case "ArrowLeft": case "a": case "A":
-          if (d !== "right") nextDir.current = "left"; break;
+          changeDir("left"); break;
         case "ArrowRight": case "d": case "D":
-          if (d !== "left") nextDir.current = "right"; break;
+          changeDir("right"); break;
       }
     };
     window.addEventListener("keydown", handle);
     return () => window.removeEventListener("keydown", handle);
-  }, [handleAction]);
+  }, [handleAction, changeDir]);
+
+  if (isMobile) {
+    return (
+      <div className="flex flex-col h-full bg-[#0a0f1a] select-none">
+        {/* Score bar */}
+        <div className="flex items-center justify-between px-4 py-2 shrink-0">
+          <span className="text-xs text-white/40 font-mono">Score: {score}</span>
+          <span className="text-xs text-white/30 font-mono">Best: {best}</span>
+        </div>
+
+        {/* Canvas */}
+        <div className="flex-1 flex items-center justify-center min-h-0 px-2">
+          <canvas
+            ref={canvasRef}
+            width={W}
+            height={H}
+            className="rounded-lg border border-white/10 w-full"
+            style={{ aspectRatio: `${W}/${H}`, maxHeight: "100%" }}
+          />
+        </div>
+
+        {/* Virtual D-Pad */}
+        <div className="shrink-0 flex flex-col items-center gap-1 py-3 pb-4">
+          {/* Start/Retry button — always reserve space to prevent layout shift */}
+          <div className="mb-2 h-9 flex items-center justify-center">
+            {gameState !== "playing" && (
+              <button
+                onTouchStart={(e) => { e.preventDefault(); handleAction(); }}
+                className="px-8 py-2 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-sm font-semibold active:bg-emerald-500/40 transition-colors"
+              >
+                {gameState === "idle" ? "Start" : "Retry"}
+              </button>
+            )}
+          </div>
+
+          {/* D-Pad */}
+          <div className="relative w-[180px] h-[180px]">
+            {/* Up */}
+            <button
+              onTouchStart={(e) => { e.preventDefault(); changeDir("up"); }}
+              className="absolute top-0 left-1/2 -translate-x-1/2 w-[60px] h-[60px] rounded-xl bg-white/[0.07] border border-white/10 flex items-center justify-center active:bg-white/20 transition-colors"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 4L4 12h12L10 4z" fill="rgba(255,255,255,0.6)"/></svg>
+            </button>
+            {/* Down */}
+            <button
+              onTouchStart={(e) => { e.preventDefault(); changeDir("down"); }}
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[60px] h-[60px] rounded-xl bg-white/[0.07] border border-white/10 flex items-center justify-center active:bg-white/20 transition-colors"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 16L4 8h12l-6 8z" fill="rgba(255,255,255,0.6)"/></svg>
+            </button>
+            {/* Left */}
+            <button
+              onTouchStart={(e) => { e.preventDefault(); changeDir("left"); }}
+              className="absolute left-0 top-1/2 -translate-y-1/2 w-[60px] h-[60px] rounded-xl bg-white/[0.07] border border-white/10 flex items-center justify-center active:bg-white/20 transition-colors"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10l8-6v12l-8-6z" fill="rgba(255,255,255,0.6)"/></svg>
+            </button>
+            {/* Right */}
+            <button
+              onTouchStart={(e) => { e.preventDefault(); changeDir("right"); }}
+              className="absolute right-0 top-1/2 -translate-y-1/2 w-[60px] h-[60px] rounded-xl bg-white/[0.07] border border-white/10 flex items-center justify-center active:bg-white/20 transition-colors"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M16 10l-8 6V4l8 6z" fill="rgba(255,255,255,0.6)"/></svg>
+            </button>
+            {/* Center dot */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[44px] h-[44px] rounded-full bg-white/[0.03] border border-white/5" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center justify-center h-full bg-[#0a0f1a] select-none">

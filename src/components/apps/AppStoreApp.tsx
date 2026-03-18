@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { HiUser, HiCode, HiTerminal, HiMail, HiCube, HiStar, HiDownload, HiSearch } from "react-icons/hi";
 import { IoGameController, IoLeaf } from "react-icons/io5";
+import { motion, AnimatePresence } from "framer-motion";
 import { useDesktop } from "../DesktopContext";
 
 interface StoreApp {
@@ -263,10 +264,13 @@ function InstallButton({
 }
 
 export default function AppStoreApp() {
-  const { openApp, installApp, installedApps } = useDesktop();
+  const { openApp, installApp, installedApps, isMobile } = useDesktop();
   const [activeCategory, setActiveCategory] = useState("Discover");
   const [selectedApp, setSelectedApp] = useState<StoreApp | null>(null);
   const [search, setSearch] = useState("");
+
+  // +1 = forward (enter from right), -1 = back (enter from left)
+  const directionRef = useRef(1);
 
   const filtered = storeApps.filter((app) => {
     const matchesCategory = activeCategory === "Discover" || app.category === activeCategory;
@@ -277,6 +281,231 @@ export default function AppStoreApp() {
       app.category.toLowerCase().includes(search.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  /* ── Shared detail view ── */
+  const detailView = selectedApp && (
+    <div className={isMobile ? "p-4" : "p-5"}>
+      <button
+        onClick={() => { directionRef.current = -1; setSelectedApp(null); }}
+        className="text-[#3478f6] text-[13px] mb-4 hover:underline"
+      >
+        &larr; Back
+      </button>
+
+      <div className="flex items-start gap-4 mb-5">
+        <div
+          className={`${isMobile ? "w-16 h-16 rounded-[14px]" : "w-20 h-20 rounded-[18px]"} bg-gradient-to-br ${selectedApp.iconBg} flex items-center justify-center text-white shrink-0`}
+          style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.3)" }}
+        >
+          {selectedApp.icon}
+        </div>
+        <div className="flex-1 min-w-0">
+          <h2 className={`${isMobile ? "text-base" : "text-lg"} font-semibold text-white`}>{selectedApp.name}</h2>
+          <p className="text-[12px] text-white/40">{selectedApp.subtitle}</p>
+          <div className="flex items-center gap-2 mt-1.5">
+            <Stars rating={selectedApp.rating} />
+            <span className="text-[11px] text-white/30">{selectedApp.rating}</span>
+            <span className="text-[11px] text-white/20">({selectedApp.reviews})</span>
+          </div>
+          {isMobile && (
+            <div className="mt-3">
+              <InstallButton
+                app={selectedApp}
+                onInstall={installApp}
+                onOpen={openApp}
+                isInstalled={installedApps.includes(selectedApp.id)}
+              />
+            </div>
+          )}
+        </div>
+        {!isMobile && (
+          <InstallButton
+            app={selectedApp}
+            onInstall={installApp}
+            onOpen={openApp}
+            isInstalled={installedApps.includes(selectedApp.id)}
+          />
+        )}
+      </div>
+
+      <div className="h-px bg-white/[0.06] mb-4" />
+
+      <div className="grid grid-cols-3 gap-4 mb-5 text-center">
+        <div>
+          <p className="text-[11px] text-white/30 mb-0.5">Rating</p>
+          <p className="text-sm font-semibold text-white">{selectedApp.rating}</p>
+        </div>
+        <div>
+          <p className="text-[11px] text-white/30 mb-0.5">Category</p>
+          <p className="text-sm font-semibold text-white">{selectedApp.category}</p>
+        </div>
+        <div>
+          <p className="text-[11px] text-white/30 mb-0.5">Size</p>
+          <p className="text-sm font-semibold text-white">{selectedApp.size}</p>
+        </div>
+      </div>
+
+      <div className="h-px bg-white/[0.06] mb-4" />
+
+      <h3 className="text-[13px] font-semibold text-white mb-2">Description</h3>
+      <p className="text-[13px] text-white/60 leading-relaxed">
+        {selectedApp.description}
+      </p>
+    </div>
+  );
+
+  /* ── Shared browse view ── */
+  const browseView = (
+    <div className={isMobile ? "p-4" : "p-5"}>
+      {/* Search bar */}
+      <div className="relative mb-4">
+        <HiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search apps..."
+          className="w-full pl-9 pr-4 py-2 rounded-lg bg-white/5 border border-white/[0.08] text-[13px] text-white placeholder-white/30 outline-none focus:border-[#3478f6]/50 focus:bg-white/[0.07] transition-colors"
+        />
+      </div>
+
+      {/* Featured banner (Discover only, no search) */}
+      {activeCategory === "Discover" && search === "" && (
+        <div
+          className="rounded-xl p-5 mb-5 relative overflow-hidden"
+          style={{
+            background: "linear-gradient(135deg, rgba(52,120,246,0.3) 0%, rgba(139,92,246,0.2) 100%)",
+            border: "1px solid rgba(255,255,255,0.08)",
+          }}
+        >
+          <p className="text-[11px] font-semibold text-[#3478f6] uppercase tracking-wider mb-1">
+            Featured
+          </p>
+          <h2 className={`${isMobile ? "text-lg" : "text-xl"} font-bold text-white mb-1`}>PortfolioOS Apps</h2>
+          <p className="text-[13px] text-white/50 max-w-xs">
+            Explore the apps that power this portfolio experience. Download games and tools from the store.
+          </p>
+        </div>
+      )}
+
+      <h3 className="text-[13px] font-semibold text-white/40 uppercase tracking-wider mb-3">
+        {search ? `Results for "${search}"` : activeCategory === "Discover" ? "All Apps" : activeCategory}
+      </h3>
+
+      {/* App list */}
+      <div className="space-y-0.5">
+        {filtered.map((app) => (
+          <button
+            key={app.id}
+            onClick={() => { directionRef.current = 1; setSelectedApp(app); }}
+            className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors text-left"
+          >
+            <div
+              className={`w-12 h-12 rounded-[12px] bg-gradient-to-br ${app.iconBg} flex items-center justify-center text-white shrink-0`}
+              style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.25)" }}
+            >
+              {app.icon}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[13px] font-medium text-white truncate">{app.name}</p>
+              <p className="text-[11px] text-white/30 truncate">{app.subtitle}</p>
+              <div className="flex items-center gap-1 mt-0.5">
+                <Stars rating={app.rating} />
+                <span className="text-[10px] text-white/20">{app.reviews}</span>
+              </div>
+            </div>
+            <InstallButton
+              app={app}
+              onInstall={installApp}
+              onOpen={openApp}
+              isInstalled={installedApps.includes(app.id)}
+              small
+            />
+          </button>
+        ))}
+
+        {filtered.length === 0 && (
+          <div className="py-12 text-center">
+            <HiDownload className="w-8 h-8 text-white/10 mx-auto mb-2" />
+            <p className="text-[13px] text-white/30">
+              {search ? "No apps match your search" : "No apps in this category yet"}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const slideVariants = {
+    enter: (d: number) => ({ x: d > 0 ? "100%" : "-100%", opacity: 0.4 }),
+    center: { x: "0%", opacity: 1 },
+    exit: (d: number) => ({ x: d > 0 ? "-35%" : "35%", opacity: 0 }),
+  };
+
+  const slideTrans = { duration: 0.32, ease: [0.32, 0.72, 0, 1] as const };
+
+  if (isMobile) {
+    const handleCategory = (cat: string) => {
+      const oldIdx = categories.indexOf(activeCategory);
+      const newIdx = categories.indexOf(cat);
+      directionRef.current = (selectedApp && cat === activeCategory) ? -1 : (newIdx > oldIdx ? 1 : -1);
+      setActiveCategory(cat);
+      setSelectedApp(null);
+      setSearch("");
+    };
+
+    return (
+      <div className="h-full flex flex-col overflow-hidden">
+        {/* Horizontal category pills */}
+        <div className="flex gap-2 px-4 py-3 shrink-0 border-b border-white/5 overflow-x-auto scrollbar-none">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => handleCategory(cat)}
+              className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium whitespace-nowrap transition-colors shrink-0 ${
+                activeCategory === cat
+                  ? "bg-[#3478f6] text-white"
+                  : "bg-white/5 text-white/50"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+        <div className="flex-1 relative overflow-hidden">
+          <AnimatePresence initial={false} custom={directionRef.current}>
+            {selectedApp ? (
+              <motion.div
+                key={`detail-${selectedApp.id}`}
+                custom={directionRef.current}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={slideTrans}
+                className="absolute inset-0 overflow-y-auto"
+              >
+                {detailView}
+              </motion.div>
+            ) : (
+              <motion.div
+                key={`browse-${activeCategory}`}
+                custom={directionRef.current}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={slideTrans}
+                className="absolute inset-0 overflow-y-auto"
+              >
+                {browseView}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-full">
@@ -291,7 +520,14 @@ export default function AppStoreApp() {
         {categories.map((cat) => (
           <button
             key={cat}
-            onClick={() => { setActiveCategory(cat); setSelectedApp(null); setSearch(""); }}
+            onClick={() => {
+              const oldIdx = categories.indexOf(activeCategory);
+              const newIdx = categories.indexOf(cat);
+              directionRef.current = (selectedApp && cat === activeCategory) ? -1 : (newIdx > oldIdx ? 1 : -1);
+              setActiveCategory(cat);
+              setSelectedApp(null);
+              setSearch("");
+            }}
             className={`w-full text-left px-2 py-1 rounded-md text-[12px] transition-colors ${
               activeCategory === cat
                 ? "bg-[#3478f6] text-white"
@@ -304,146 +540,36 @@ export default function AppStoreApp() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 overflow-y-auto">
-        {selectedApp ? (
-          /* App detail view */
-          <div className="p-5">
-            <button
-              onClick={() => setSelectedApp(null)}
-              className="text-[#3478f6] text-[13px] mb-4 hover:underline"
+      <div className="flex-1 relative overflow-hidden">
+        <AnimatePresence initial={false} custom={directionRef.current}>
+          {selectedApp ? (
+            <motion.div
+              key={`detail-${selectedApp.id}`}
+              custom={directionRef.current}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={slideTrans}
+              className="absolute inset-0 overflow-y-auto"
             >
-              &larr; Back
-            </button>
-
-            <div className="flex items-start gap-4 mb-5">
-              <div
-                className={`w-20 h-20 rounded-[18px] bg-gradient-to-br ${selectedApp.iconBg} flex items-center justify-center text-white shrink-0`}
-                style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.3)" }}
-              >
-                {selectedApp.icon}
-              </div>
-              <div className="flex-1 min-w-0">
-                <h2 className="text-lg font-semibold text-white">{selectedApp.name}</h2>
-                <p className="text-[12px] text-white/40">{selectedApp.subtitle}</p>
-                <div className="flex items-center gap-2 mt-1.5">
-                  <Stars rating={selectedApp.rating} />
-                  <span className="text-[11px] text-white/30">{selectedApp.rating}</span>
-                  <span className="text-[11px] text-white/20">({selectedApp.reviews})</span>
-                </div>
-              </div>
-              <InstallButton
-                app={selectedApp}
-                onInstall={installApp}
-                onOpen={openApp}
-                isInstalled={installedApps.includes(selectedApp.id)}
-              />
-            </div>
-
-            <div className="h-px bg-white/[0.06] mb-4" />
-
-            <div className="grid grid-cols-3 gap-4 mb-5 text-center">
-              <div>
-                <p className="text-[11px] text-white/30 mb-0.5">Rating</p>
-                <p className="text-sm font-semibold text-white">{selectedApp.rating}</p>
-              </div>
-              <div>
-                <p className="text-[11px] text-white/30 mb-0.5">Category</p>
-                <p className="text-sm font-semibold text-white">{selectedApp.category}</p>
-              </div>
-              <div>
-                <p className="text-[11px] text-white/30 mb-0.5">Size</p>
-                <p className="text-sm font-semibold text-white">{selectedApp.size}</p>
-              </div>
-            </div>
-
-            <div className="h-px bg-white/[0.06] mb-4" />
-
-            <h3 className="text-[13px] font-semibold text-white mb-2">Description</h3>
-            <p className="text-[13px] text-white/60 leading-relaxed">
-              {selectedApp.description}
-            </p>
-          </div>
-        ) : (
-          /* Browse view */
-          <div className="p-5">
-            {/* Search bar */}
-            <div className="relative mb-4">
-              <HiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search apps..."
-                className="w-full pl-9 pr-4 py-2 rounded-lg bg-white/5 border border-white/[0.08] text-[13px] text-white placeholder-white/30 outline-none focus:border-[#3478f6]/50 focus:bg-white/[0.07] transition-colors"
-              />
-            </div>
-
-            {/* Featured banner (Discover only, no search) */}
-            {activeCategory === "Discover" && search === "" && (
-              <div
-                className="rounded-xl p-5 mb-5 relative overflow-hidden"
-                style={{
-                  background: "linear-gradient(135deg, rgba(52,120,246,0.3) 0%, rgba(139,92,246,0.2) 100%)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                }}
-              >
-                <p className="text-[11px] font-semibold text-[#3478f6] uppercase tracking-wider mb-1">
-                  Featured
-                </p>
-                <h2 className="text-xl font-bold text-white mb-1">PortfolioOS Apps</h2>
-                <p className="text-[13px] text-white/50 max-w-xs">
-                  Explore the apps that power this portfolio experience. Download games and tools from the store.
-                </p>
-              </div>
-            )}
-
-            <h3 className="text-[13px] font-semibold text-white/40 uppercase tracking-wider mb-3">
-              {search ? `Results for "${search}"` : activeCategory === "Discover" ? "All Apps" : activeCategory}
-            </h3>
-
-            {/* App list */}
-            <div className="space-y-0.5">
-              {filtered.map((app) => (
-                <button
-                  key={app.id}
-                  onClick={() => setSelectedApp(app)}
-                  className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors text-left"
-                >
-                  <div
-                    className={`w-12 h-12 rounded-[12px] bg-gradient-to-br ${app.iconBg} flex items-center justify-center text-white shrink-0`}
-                    style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.25)" }}
-                  >
-                    {app.icon}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-medium text-white truncate">{app.name}</p>
-                    <p className="text-[11px] text-white/30 truncate">{app.subtitle}</p>
-                    <div className="flex items-center gap-1 mt-0.5">
-                      <Stars rating={app.rating} />
-                      <span className="text-[10px] text-white/20">{app.reviews}</span>
-                    </div>
-                  </div>
-                  <InstallButton
-                    app={app}
-                    onInstall={installApp}
-                    onOpen={openApp}
-                    isInstalled={installedApps.includes(app.id)}
-                    small
-                  />
-                </button>
-              ))}
-
-              {filtered.length === 0 && (
-                <div className="py-12 text-center">
-                  <HiDownload className="w-8 h-8 text-white/10 mx-auto mb-2" />
-                  <p className="text-[13px] text-white/30">
-                    {search ? "No apps match your search" : "No apps in this category yet"}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
+              {detailView}
+            </motion.div>
+          ) : (
+            <motion.div
+              key={`browse-${activeCategory}`}
+              custom={directionRef.current}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={slideTrans}
+              className="absolute inset-0 overflow-y-auto"
+            >
+              {browseView}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
