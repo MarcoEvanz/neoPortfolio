@@ -177,6 +177,19 @@ const storeApps: StoreApp[] = [
     size: "4 MB",
     builtIn: false,
   },
+  {
+    id: "n3dsemulator",
+    name: "3DS Emulator",
+    subtitle: "Nintendo 3DS Player",
+    description: "Play Nintendo 3DS games in your browser with EmulatorJS. Load ROMs from your library, upload .3ds or .cci files, or enter a URL. Supports save states and fullscreen.",
+    icon: <IoGameController className="text-2xl" />,
+    iconBg: "from-rose-500 to-red-600",
+    category: "Games",
+    rating: 4.6,
+    reviews: "8.5K",
+    size: "5 MB",
+    builtIn: false,
+  },
 ];
 
 const categories = ["Discover", "Games", "Developer Tools", "Productivity", "Utilities", "Social Networking"];

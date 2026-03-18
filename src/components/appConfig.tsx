@@ -15,6 +15,7 @@ import DinoJumpApp from "./apps/DinoJumpApp";
 import FlashPlayerApp from "./apps/FlashPlayerApp";
 import GBAEmulatorApp from "./apps/GBAEmulatorApp";
 import NDSEmulatorApp from "./apps/NDSEmulatorApp";
+import N3DSEmulatorApp from "./apps/N3DSEmulatorApp";
 
 export interface AppConfig {
   id: string;
@@ -150,6 +151,15 @@ export const downloadableApps: AppConfig[] = [
     iconBg: "from-sky-500 to-cyan-600",
     component: <NDSEmulatorApp />,
     defaultPos: { x: 140, y: 60 },
+    defaultSize: { w: 800, h: 600 },
+  },
+  {
+    id: "n3dsemulator",
+    title: "3DS Emulator",
+    icon: <IoGameController />,
+    iconBg: "from-rose-500 to-red-600",
+    component: <N3DSEmulatorApp />,
+    defaultPos: { x: 160, y: 70 },
     defaultSize: { w: 800, h: 600 },
   },
 ];

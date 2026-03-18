@@ -66,3 +66,10 @@ generateManifest(
   [".nds"],
   "/nds"
 );
+
+// 3DS ROMs (.3ds, .cci, .cxi)
+generateManifest(
+  path.join(__dirname, "..", "public", "3ds"),
+  [".3ds", ".cci", ".cxi"],
+  "/3ds"
+);
