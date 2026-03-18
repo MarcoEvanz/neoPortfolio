@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { HiUser, HiCode, HiTerminal, HiMail, HiCube, HiStar, HiDownload, HiSearch } from "react-icons/hi";
-import { IoGameController, IoLeaf } from "react-icons/io5";
+import { IoGameController, IoLeaf, IoFlash } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDesktop } from "../DesktopContext";
 
@@ -136,6 +136,19 @@ const storeApps: StoreApp[] = [
     rating: 4.6,
     reviews: "7.2K",
     size: "1 MB",
+    builtIn: false,
+  },
+  {
+    id: "flashplayer",
+    name: "Flash Player",
+    subtitle: "Classic Flash Games & SWF Player",
+    description: "Play classic Flash games and interactive content using the Ruffle emulator. Load .swf files from URL or upload your own. Relive the golden age of Flash!",
+    icon: <IoFlash className="text-2xl" />,
+    iconBg: "from-red-500 to-orange-500",
+    category: "Games",
+    rating: 4.6,
+    reviews: "8.3K",
+    size: "2 MB",
     builtIn: false,
   },
 ];

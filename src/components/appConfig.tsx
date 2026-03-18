@@ -1,7 +1,7 @@
 "use client";
 
 import { HiUser, HiCode, HiTerminal, HiMail, HiCube, HiShoppingCart } from "react-icons/hi";
-import { IoGameController, IoLeaf } from "react-icons/io5";
+import { IoGameController, IoLeaf, IoFlash } from "react-icons/io5";
 import AboutApp from "./apps/AboutApp";
 import ProjectsApp from "./apps/ProjectsApp";
 import SkillsApp from "./apps/SkillsApp";
@@ -12,6 +12,7 @@ import FlappyBirdApp from "./apps/FlappyBirdApp";
 import PvZ2App from "./apps/PvZ2App";
 import SnakeApp from "./apps/SnakeApp";
 import DinoJumpApp from "./apps/DinoJumpApp";
+import FlashPlayerApp from "./apps/FlashPlayerApp";
 
 export interface AppConfig {
   id: string;
@@ -121,5 +122,14 @@ export const downloadableApps: AppConfig[] = [
     defaultPos: { x: 140, y: 50 },
     defaultSize: { w: 650, h: 400 },
     isGame: true,
+  },
+  {
+    id: "flashplayer",
+    title: "Flash Player",
+    icon: <IoFlash />,
+    iconBg: "from-red-500 to-orange-500",
+    component: <FlashPlayerApp />,
+    defaultPos: { x: 100, y: 40 },
+    defaultSize: { w: 800, h: 600 },
   },
 ];
