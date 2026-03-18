@@ -26,10 +26,14 @@ export default function FlashPlayerApp() {
   const playerRef = useRef<HTMLElement | null>(null);
 
   // Fetch game manifest from /games/index.json (generated at build time)
+  // Use basePath to support deployments under a subpath (e.g. /neoPortfolio)
   useEffect(() => {
-    fetch("/games/index.json")
+    const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+    fetch(`${base}/games/index.json`)
       .then((r) => r.json())
-      .then((data: FlashGame[]) => setBundledGames(data))
+      .then((data: FlashGame[]) =>
+        setBundledGames(data.map((g) => ({ ...g, url: `${base}${g.url}` })))
+      )
       .catch(() => {}); // no manifest = no bundled games
   }, []);
 
