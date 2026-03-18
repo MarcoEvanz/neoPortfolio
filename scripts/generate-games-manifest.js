@@ -53,9 +53,16 @@ generateManifest(
   "/games"
 );
 
-// GBA ROMs (.gba, .gb, .gbc, .zip, .7z)
+// GBA ROMs (.gba, .gb, .gbc)
 generateManifest(
   path.join(__dirname, "..", "public", "roms"),
   [".gba", ".gb", ".gbc"],
   "/roms"
+);
+
+// NDS ROMs (.nds)
+generateManifest(
+  path.join(__dirname, "..", "public", "nds"),
+  [".nds"],
+  "/nds"
 );

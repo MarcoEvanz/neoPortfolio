@@ -164,6 +164,19 @@ const storeApps: StoreApp[] = [
     size: "3 MB",
     builtIn: false,
   },
+  {
+    id: "ndsemulator",
+    name: "NDS Emulator",
+    subtitle: "Nintendo DS Player",
+    description: "Play Nintendo DS games in your browser with EmulatorJS. Load ROMs from your library, upload .nds files, or enter a URL. Dual-screen emulation with save states and fullscreen support.",
+    icon: <IoGameController className="text-2xl" />,
+    iconBg: "from-sky-500 to-cyan-600",
+    category: "Games",
+    rating: 4.7,
+    reviews: "9.8K",
+    size: "4 MB",
+    builtIn: false,
+  },
 ];
 
 const categories = ["Discover", "Games", "Developer Tools", "Productivity", "Utilities", "Social Networking"];

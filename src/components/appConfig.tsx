@@ -14,6 +14,7 @@ import SnakeApp from "./apps/SnakeApp";
 import DinoJumpApp from "./apps/DinoJumpApp";
 import FlashPlayerApp from "./apps/FlashPlayerApp";
 import GBAEmulatorApp from "./apps/GBAEmulatorApp";
+import NDSEmulatorApp from "./apps/NDSEmulatorApp";
 
 export interface AppConfig {
   id: string;
@@ -140,6 +141,15 @@ export const downloadableApps: AppConfig[] = [
     iconBg: "from-indigo-500 to-purple-600",
     component: <GBAEmulatorApp />,
     defaultPos: { x: 120, y: 50 },
+    defaultSize: { w: 800, h: 600 },
+  },
+  {
+    id: "ndsemulator",
+    title: "NDS Emulator",
+    icon: <IoGameController />,
+    iconBg: "from-sky-500 to-cyan-600",
+    component: <NDSEmulatorApp />,
+    defaultPos: { x: 140, y: 60 },
     defaultSize: { w: 800, h: 600 },
   },
 ];

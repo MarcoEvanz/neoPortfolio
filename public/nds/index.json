@@ -1,0 +1,20 @@
+[
+  {
+    "id": "pokemon_diamond",
+    "title": "Pokemon Diamond",
+    "url": "/nds/pokemon_diamond.nds",
+    "color": "from-amber-600 to-red-700"
+  },
+  {
+    "id": "pokemon_pearl",
+    "title": "Pokemon Pearl",
+    "url": "/nds/pokemon_pearl.nds",
+    "color": "from-blue-500 to-indigo-600"
+  },
+  {
+    "id": "pokemon_platinum",
+    "title": "Pokemon Platinum",
+    "url": "/nds/pokemon_platinum.nds",
+    "color": "from-emerald-500 to-teal-600"
+  }
+]
