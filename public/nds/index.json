@@ -10,47 +10,5 @@
     "title": "Pokemon Pearl",
     "url": "/nds/pokemon_pearl.nds",
     "color": "from-blue-500 to-indigo-600"
-  },
-  {
-    "id": "pokemon-platinum",
-    "title": "Pokemon Platinum",
-    "url": "https://drive.usercontent.google.com/download?id=1ZLBFr_k9A65nSpPLS7QJK7HVzJbbMkbN&export=download&confirm=t",
-    "color": "from-emerald-500 to-teal-600"
-  },
-  {
-    "id": "pokemon-black",
-    "title": "Pokemon Black",
-    "url": "https://drive.usercontent.google.com/download?id=1UqtuIxlMr85CrFVjWrNUYv6EWW7IBaOc&export=download&confirm=t",
-    "color": "from-rose-500 to-red-600"
-  },
-  {
-    "id": "pokemon-white",
-    "title": "Pokemon White",
-    "url": "https://drive.usercontent.google.com/download?id=1gndesKw46YORQdsIJA5o2DZI6ckENPlE&export=download&confirm=t",
-    "color": "from-orange-500 to-yellow-600"
-  },
-  {
-    "id": "pokemon-heart-gold",
-    "title": "Pokemon Heart Gold",
-    "url": "https://drive.usercontent.google.com/download?id=13d_gVOIi7_55DzptzGpPoMMN733V0MnW&export=download&confirm=t",
-    "color": "from-amber-600 to-red-700"
-  },
-  {
-    "id": "pokemon-soul-silver",
-    "title": "Pokemon Soul Silver",
-    "url": "https://drive.usercontent.google.com/download?id=1VLkPZbNdnTlSIzs4FpIPGovJzbgjlIDA&export=download&confirm=t",
-    "color": "from-emerald-500 to-teal-600"
-  },
-  {
-    "id": "pokemon-black-2",
-    "title": "Pokemon Black 2",
-    "url": "https://drive.usercontent.google.com/download?id=19B7l-dBnGt4rZFKba7rbJjDZKOWZEfwt&export=download&confirm=t",
-    "color": "from-rose-500 to-red-600"
-  },
-  {
-    "id": "pokemon-white-2",
-    "title": "Pokemon White 2",
-    "url": "https://drive.usercontent.google.com/download?id=1tuk22YT_rzeWpMPmxY1gQhb5b0YoqzTa&export=download&confirm=t",
-    "color": "from-orange-500 to-yellow-600"
   }
 ]

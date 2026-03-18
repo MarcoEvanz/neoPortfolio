@@ -20,8 +20,6 @@ export default function GBAEmulatorApp() {
   const [activeRom, setActiveRom] = useState<{ title: string; url: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [urlInput, setUrlInput] = useState("");
-  const [downloading, setDownloading] = useState(false);
-  const [downloadProgress, setDownloadProgress] = useState(0);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // Fetch ROM manifest
@@ -30,7 +28,7 @@ export default function GBAEmulatorApp() {
     fetch(`${base}/roms/index.json`)
       .then((r) => r.json())
       .then((data: RomEntry[]) =>
-        setBundledRoms(data.map((r) => ({ ...r, url: r.url.startsWith("http") ? r.url : `${base}${r.url}` })))
+        setBundledRoms(data.map((r) => ({ ...r, url: `${base}${r.url}` })))
       )
       .catch(() => {});
   }, []);
@@ -55,41 +53,10 @@ export default function GBAEmulatorApp() {
 </body></html>`;
   }, []);
 
-  const loadRom = useCallback(async (url: string, title: string) => {
+  const loadRom = useCallback((url: string, title: string) => {
     setError(null);
-    if (url.startsWith("http")) {
-      setDownloading(true);
-      setDownloadProgress(0);
-      setActiveRom({ title, url: "" });
-      setView("player");
-      try {
-        const resp = await fetch(url);
-        if (!resp.ok) throw new Error("Download failed");
-        const contentLength = resp.headers.get("content-length");
-        const total = contentLength ? Number.parseInt(contentLength, 10) : 0;
-        const reader = resp.body?.getReader();
-        if (!reader) throw new Error("No reader");
-        const chunks: Uint8Array[] = [];
-        let received = 0;
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          chunks.push(value);
-          received += value.length;
-          if (total > 0) setDownloadProgress(Math.round((received / total) * 100));
-        }
-        const blob = new Blob(chunks as BlobPart[]);
-        const blobUrl = URL.createObjectURL(blob);
-        setActiveRom({ title, url: blobUrl });
-        setDownloading(false);
-      } catch {
-        setError("Failed to download ROM. The file may be unavailable.");
-        setDownloading(false);
-      }
-    } else {
-      setActiveRom({ title, url });
-      setView("player");
-    }
+    setActiveRom({ title, url });
+    setView("player");
   }, []);
 
   const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,8 +76,6 @@ export default function GBAEmulatorApp() {
   const goBack = useCallback(() => {
     setActiveRom(null);
     setError(null);
-    setDownloading(false);
-    setDownloadProgress(0);
     setView("library");
   }, []);
 
@@ -140,23 +105,13 @@ export default function GBAEmulatorApp() {
               <button onClick={goBack} className="text-xs text-white/50 underline">Go back</button>
             </div>
           )}
-          {downloading && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 z-10 bg-[#0a0f1a]">
-              <div className="w-48 h-2 rounded-full bg-white/10 overflow-hidden">
-                <div className="h-full bg-indigo-500 rounded-full transition-all duration-300" style={{ width: `${downloadProgress}%` }} />
-              </div>
-              <p className="text-xs text-white/40">Downloading ROM... {downloadProgress}%</p>
-            </div>
-          )}
-          {!downloading && activeRom.url && (
-            <iframe
-              ref={iframeRef}
-              srcDoc={buildEmulatorHtml(activeRom.url, activeRom.title)}
-              className="w-full h-full border-0"
-              allow="autoplay; gamepad; fullscreen"
-              title={activeRom.title}
-            />
-          )}
+          <iframe
+            ref={iframeRef}
+            srcDoc={buildEmulatorHtml(activeRom.url, activeRom.title)}
+            className="w-full h-full border-0"
+            allow="autoplay; gamepad; fullscreen"
+            title={activeRom.title}
+          />
         </div>
       </div>
     );
