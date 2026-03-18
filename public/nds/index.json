@@ -1,20 +1,44 @@
 [
   {
+    "id": "pokemon_black",
+    "title": "Pokemon Black",
+    "url": "/nds/pokemon_black.nds",
+    "color": "from-amber-600 to-red-700"
+  },
+  {
     "id": "pokemon_diamond",
     "title": "Pokemon Diamond",
     "url": "/nds/pokemon_diamond.nds",
-    "color": "from-amber-600 to-red-700"
+    "color": "from-blue-500 to-indigo-600"
+  },
+  {
+    "id": "pokemon_heart_gold",
+    "title": "Pokemon Heart Gold",
+    "url": "/nds/pokemon_heart_gold.nds",
+    "color": "from-emerald-500 to-teal-600"
   },
   {
     "id": "pokemon_pearl",
     "title": "Pokemon Pearl",
     "url": "/nds/pokemon_pearl.nds",
-    "color": "from-blue-500 to-indigo-600"
+    "color": "from-purple-500 to-pink-600"
   },
   {
     "id": "pokemon_platinum",
     "title": "Pokemon Platinum",
     "url": "/nds/pokemon_platinum.nds",
-    "color": "from-emerald-500 to-teal-600"
+    "color": "from-rose-500 to-red-600"
+  },
+  {
+    "id": "pokemon_soul_silver",
+    "title": "Pokemon Soul Silver",
+    "url": "/nds/pokemon_soul_silver.nds",
+    "color": "from-cyan-500 to-blue-600"
+  },
+  {
+    "id": "pokemon_white",
+    "title": "Pokemon White",
+    "url": "/nds/pokemon_white.nds",
+    "color": "from-orange-500 to-yellow-600"
   }
 ]

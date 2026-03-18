@@ -22,3 +22,10 @@ npm-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ROMs too large for GitHub (>100MB)
+public/nds/pokemon_platinum.nds
+public/nds/pokemon_black.nds
+public/nds/pokemon_white.nds
+public/nds/pokemon_heart_gold.nds
+public/nds/pokemon_soul_silver.nds
