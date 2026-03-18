@@ -1,0 +1,32 @@
+[
+  {
+    "id": "pokemon_emerald",
+    "title": "Pokemon Emerald",
+    "url": "/gba/pokemon_emerald.gba",
+    "color": "from-amber-600 to-red-700"
+  },
+  {
+    "id": "pokemon_fire_red",
+    "title": "Pokemon Fire Red",
+    "url": "/gba/pokemon_fire_red.gba",
+    "color": "from-blue-500 to-indigo-600"
+  },
+  {
+    "id": "pokemon_leaf_green",
+    "title": "Pokemon Leaf Green",
+    "url": "/gba/pokemon_leaf_green.gba",
+    "color": "from-emerald-500 to-teal-600"
+  },
+  {
+    "id": "pokemon_ruby",
+    "title": "Pokemon Ruby",
+    "url": "/gba/pokemon_ruby.gba",
+    "color": "from-purple-500 to-pink-600"
+  },
+  {
+    "id": "pokemon_sapphire",
+    "title": "Pokemon Sapphire",
+    "url": "/gba/pokemon_sapphire.gba",
+    "color": "from-rose-500 to-red-600"
+  }
+]

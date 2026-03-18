@@ -1,0 +1,20 @@
+[
+  {
+    "id": "legend_of_zelda_the_majora_mask",
+    "title": "Legend Of Zelda The Majora Mask",
+    "url": "/n64/legend_of_zelda_the_majora_mask.n64",
+    "color": "from-amber-600 to-red-700"
+  },
+  {
+    "id": "legend_of_zelda_the_ocarina_of_time",
+    "title": "Legend Of Zelda The Ocarina Of Time",
+    "url": "/n64/legend_of_zelda_the_ocarina_of_time.z64",
+    "color": "from-blue-500 to-indigo-600"
+  },
+  {
+    "id": "super_mario_64",
+    "title": "Super Mario 64",
+    "url": "/n64/super_mario_64.n64",
+    "color": "from-emerald-500 to-teal-600"
+  }
+]

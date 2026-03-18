@@ -1,0 +1,86 @@
+[
+  {
+    "id": "age_of_war",
+    "title": "Age Of War",
+    "url": "/flash/age_of_war.swf",
+    "color": "from-amber-600 to-red-700"
+  },
+  {
+    "id": "bartender_the_right_mix",
+    "title": "Bartender The Right Mix",
+    "url": "/flash/bartender_the_right_mix.swf",
+    "color": "from-blue-500 to-indigo-600"
+  },
+  {
+    "id": "ben10",
+    "title": "Ben10",
+    "url": "/flash/ben10.swf",
+    "color": "from-emerald-500 to-teal-600"
+  },
+  {
+    "id": "fireboy_watergirl_the_forest_temple",
+    "title": "Fireboy Watergirl The Forest Temple",
+    "url": "/flash/fireboy_watergirl_the_forest_temple.swf",
+    "color": "from-purple-500 to-pink-600"
+  },
+  {
+    "id": "gold_miner",
+    "title": "Gold Miner",
+    "url": "/flash/gold_miner.swf",
+    "color": "from-rose-500 to-red-600"
+  },
+  {
+    "id": "grow_island",
+    "title": "Grow Island",
+    "url": "/flash/grow_island.swf",
+    "color": "from-cyan-500 to-blue-600"
+  },
+  {
+    "id": "happy_wheels",
+    "title": "Happy Wheels",
+    "url": "/flash/happy_wheels.swf",
+    "color": "from-orange-500 to-yellow-600"
+  },
+  {
+    "id": "learn_the_fly_2",
+    "title": "Learn The Fly 2",
+    "url": "/flash/learn_the_fly_2.swf",
+    "color": "from-violet-500 to-purple-600"
+  },
+  {
+    "id": "learn_to_fly_3",
+    "title": "Learn To Fly 3",
+    "url": "/flash/learn_to_fly_3.swf",
+    "color": "from-amber-600 to-red-700"
+  },
+  {
+    "id": "monkey_go_happy",
+    "title": "Monkey Go Happy",
+    "url": "/flash/monkey_go_happy.swf",
+    "color": "from-blue-500 to-indigo-600"
+  },
+  {
+    "id": "motherload",
+    "title": "Motherload",
+    "url": "/flash/motherload.swf",
+    "color": "from-emerald-500 to-teal-600"
+  },
+  {
+    "id": "super_smash_flash",
+    "title": "Super Smash Flash",
+    "url": "/flash/super_smash_flash.swf",
+    "color": "from-purple-500 to-pink-600"
+  },
+  {
+    "id": "the_worlds_hardest_game",
+    "title": "The Worlds Hardest Game",
+    "url": "/flash/the_worlds_hardest_game.swf",
+    "color": "from-rose-500 to-red-600"
+  },
+  {
+    "id": "tom_and_jerry_trapomatic",
+    "title": "Tom And Jerry Trapomatic",
+    "url": "/flash/tom_and_jerry_trapomatic.swf",
+    "color": "from-cyan-500 to-blue-600"
+  }
+]

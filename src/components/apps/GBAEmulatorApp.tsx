@@ -25,7 +25,7 @@ export default function GBAEmulatorApp() {
   // Fetch ROM manifest
   useEffect(() => {
     const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-    fetch(`${base}/roms/index.json`)
+    fetch(`${base}/gba/index.json`)
       .then((r) => r.json())
       .then((data: RomEntry[]) =>
         setBundledRoms(data.map((r) => ({ ...r, url: `${base}${r.url}` })))
@@ -226,7 +226,7 @@ export default function GBAEmulatorApp() {
             </div>
             <p className="text-sm text-white/30">No bundled ROMs yet</p>
             <p className="text-[11px] text-white/15 text-center max-w-[200px]">
-              Add .gba files to /public/roms/ and restart, or use the custom loader above
+              Add .gba files to /public/gba/ and restart, or use the custom loader above
             </p>
           </div>
         )}

@@ -1,5 +1,5 @@
 /**
- * Scans public/games/ for .swf files and public/roms/ for ROM files,
+ * Scans public/flash/ for .swf files and public/gba/ for ROM files,
  * then writes index.json manifests for each.
  * Run this before build, or add to your build script.
  */
@@ -48,16 +48,16 @@ function generateManifest(dir, extensions, urlPrefix) {
 
 // Flash games (.swf)
 generateManifest(
-  path.join(__dirname, "..", "public", "games"),
+  path.join(__dirname, "..", "public", "flash"),
   [".swf"],
-  "/games"
+  "/flash"
 );
 
 // GBA ROMs (.gba, .gb, .gbc)
 generateManifest(
-  path.join(__dirname, "..", "public", "roms"),
+  path.join(__dirname, "..", "public", "gba"),
   [".gba", ".gb", ".gbc"],
-  "/roms"
+  "/gba"
 );
 
 // NDS ROMs (.nds)
@@ -65,6 +65,27 @@ generateManifest(
   path.join(__dirname, "..", "public", "nds"),
   [".nds"],
   "/nds"
+);
+
+// NES ROMs (.nes)
+generateManifest(
+  path.join(__dirname, "..", "public", "nes"),
+  [".nes"],
+  "/nes"
+);
+
+// SNES ROMs (.sfc, .smc)
+generateManifest(
+  path.join(__dirname, "..", "public", "snes"),
+  [".sfc", ".smc"],
+  "/snes"
+);
+
+// N64 ROMs (.z64, .n64, .v64)
+generateManifest(
+  path.join(__dirname, "..", "public", "n64"),
+  [".z64", ".n64", ".v64"],
+  "/n64"
 );
 
 // 3DS ROMs (.3ds, .cci, .cxi)

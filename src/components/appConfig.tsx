@@ -16,6 +16,9 @@ import FlashPlayerApp from "./apps/FlashPlayerApp";
 import GBAEmulatorApp from "./apps/GBAEmulatorApp";
 import NDSEmulatorApp from "./apps/NDSEmulatorApp";
 import N3DSEmulatorApp from "./apps/N3DSEmulatorApp";
+import NESEmulatorApp from "./apps/NESEmulatorApp";
+import SNESEmulatorApp from "./apps/SNESEmulatorApp";
+import N64EmulatorApp from "./apps/N64EmulatorApp";
 
 export interface AppConfig {
   id: string;
@@ -154,12 +157,39 @@ export const downloadableApps: AppConfig[] = [
     defaultSize: { w: 800, h: 600 },
   },
   {
+    id: "nesemulator",
+    title: "NES Emulator",
+    icon: <IoGameController />,
+    iconBg: "from-red-500 to-orange-600",
+    component: <NESEmulatorApp />,
+    defaultPos: { x: 160, y: 70 },
+    defaultSize: { w: 800, h: 600 },
+  },
+  {
+    id: "snesemulator",
+    title: "SNES Emulator",
+    icon: <IoGameController />,
+    iconBg: "from-purple-500 to-violet-600",
+    component: <SNESEmulatorApp />,
+    defaultPos: { x: 180, y: 80 },
+    defaultSize: { w: 800, h: 600 },
+  },
+  {
+    id: "n64emulator",
+    title: "N64 Emulator",
+    icon: <IoGameController />,
+    iconBg: "from-green-500 to-emerald-600",
+    component: <N64EmulatorApp />,
+    defaultPos: { x: 200, y: 90 },
+    defaultSize: { w: 800, h: 600 },
+  },
+  {
     id: "n3dsemulator",
     title: "3DS Emulator",
     icon: <IoGameController />,
     iconBg: "from-rose-500 to-red-600",
     component: <N3DSEmulatorApp />,
-    defaultPos: { x: 160, y: 70 },
-    defaultSize: { w: 800, h: 600 },
+    defaultPos: { x: 220, y: 100 },
+    defaultSize: { w: 500, h: 400 },
   },
 ];

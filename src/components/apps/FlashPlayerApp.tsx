@@ -25,11 +25,11 @@ export default function FlashPlayerApp() {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<HTMLElement | null>(null);
 
-  // Fetch game manifest from /games/index.json (generated at build time)
+  // Fetch game manifest from /flash/index.json (generated at build time)
   // Use basePath to support deployments under a subpath (e.g. /neoPortfolio)
   useEffect(() => {
     const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-    fetch(`${base}/games/index.json`)
+    fetch(`${base}/flash/index.json`)
       .then((r) => r.json())
       .then((data: FlashGame[]) =>
         setBundledGames(data.map((g) => ({ ...g, url: `${base}${g.url}` })))
@@ -292,7 +292,7 @@ export default function FlashPlayerApp() {
             </div>
             <p className="text-sm text-white/30">No bundled games yet</p>
             <p className="text-[11px] text-white/15 text-center max-w-[200px]">
-              Add .swf files to /public/games/ and register them in the bundledGames array, or use the custom loader above
+              Add .swf files to /public/flash/ and register them in the bundledGames array, or use the custom loader above
             </p>
           </div>
         )}
