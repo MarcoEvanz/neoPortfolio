@@ -32,24 +32,15 @@ export default function SNESEmulatorApp() {
       .catch(() => {});
   }, []);
 
-  const buildEmulatorHtml = useCallback((romUrl: string, gameName: string) => {
-    return `<!DOCTYPE html>
-<html><head>
-<style>body{margin:0;overflow:hidden;background:#000}#game{width:100%;height:100vh}</style>
-</head><body>
-<div id="game"></div>
-<script>
-  EJS_player='#game';
-  EJS_core='snes';
-  EJS_pathtodata='https://cdn.emulatorjs.org/stable/data/';
-  EJS_gameUrl='${romUrl}';
-  EJS_gameName='${gameName.replace(/'/g, "\\'")}';
-  EJS_startOnLoaded=true;
-  EJS_color='#a855f7';
-  EJS_backgroundColor='#0a0f1a';
-</script>
-<script src="https://cdn.emulatorjs.org/stable/data/loader.js"><\/script>
-</body></html>`;
+  const buildEmulatorUrl = useCallback((romUrl: string, gameName: string) => {
+    const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+    const params = new URLSearchParams({
+      core: "snes",
+      rom: romUrl,
+      name: gameName,
+      color: "#a855f7",
+    });
+    return `${base}/emulator.html?${params.toString()}`;
   }, []);
 
   const loadRom = useCallback((url: string, title: string) => {
@@ -104,7 +95,7 @@ export default function SNESEmulatorApp() {
           )}
           <iframe
             ref={iframeRef}
-            srcDoc={buildEmulatorHtml(activeRom.url, activeRom.title)}
+            src={buildEmulatorUrl(activeRom.url, activeRom.title)}
             className="w-full h-full border-0"
             allow="autoplay; gamepad; fullscreen"
             title={activeRom.title}

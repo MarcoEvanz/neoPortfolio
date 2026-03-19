@@ -6,9 +6,27 @@
     "color": "from-amber-600 to-red-700"
   },
   {
+    "id": "pokemon_heart_gold",
+    "title": "Pokemon Heart Gold",
+    "url": "/nds/pokemon_heart_gold.zip",
+    "color": "from-blue-500 to-indigo-600"
+  },
+  {
     "id": "pokemon_pearl",
     "title": "Pokemon Pearl",
     "url": "/nds/pokemon_pearl.nds",
-    "color": "from-blue-500 to-indigo-600"
+    "color": "from-emerald-500 to-teal-600"
+  },
+  {
+    "id": "pokemon_platinum",
+    "title": "Pokemon Platinum",
+    "url": "/nds/pokemon_platinum.zip",
+    "color": "from-purple-500 to-pink-600"
+  },
+  {
+    "id": "pokemon_soul_silver",
+    "title": "Pokemon Soul Silver",
+    "url": "/nds/pokemon_soul_silver.zip",
+    "color": "from-rose-500 to-red-600"
   }
 ]

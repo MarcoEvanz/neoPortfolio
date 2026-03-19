@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "id": "final_fantasy_iv",
+    "title": "Final Fantasy Iv",
+    "url": "/snes/final_fantasy_iv.sfc",
+    "color": "from-amber-600 to-red-700"
+  },
+  {
+    "id": "megaman_x",
+    "title": "Megaman X",
+    "url": "/snes/megaman_x.sfc",
+    "color": "from-blue-500 to-indigo-600"
+  },
+  {
+    "id": "super_mario_world",
+    "title": "Super Mario World",
+    "url": "/snes/super_mario_world.sfc",
+    "color": "from-emerald-500 to-teal-600"
+  },
+  {
+    "id": "the_legend_of_zelda_a_link_to_the_past",
+    "title": "The Legend Of Zelda A Link To The Past",
+    "url": "/snes/the_legend_of_zelda_a_link_to_the_past.sfc",
+    "color": "from-purple-500 to-pink-600"
+  }
+]

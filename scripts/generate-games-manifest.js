@@ -60,10 +60,10 @@ generateManifest(
   "/gba"
 );
 
-// NDS ROMs (.nds)
+// NDS ROMs (.nds, .zip)
 generateManifest(
   path.join(__dirname, "..", "public", "nds"),
-  [".nds"],
+  [".nds", ".zip"],
   "/nds"
 );
 

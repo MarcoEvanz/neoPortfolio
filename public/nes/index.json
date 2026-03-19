@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "id": "legend_of_zelda",
+    "title": "Legend Of Zelda",
+    "url": "/nes/legend_of_zelda.nes",
+    "color": "from-amber-600 to-red-700"
+  },
+  {
+    "id": "super_mario_bros",
+    "title": "Super Mario Bros",
+    "url": "/nes/super_mario_bros.nes",
+    "color": "from-blue-500 to-indigo-600"
+  }
+]
