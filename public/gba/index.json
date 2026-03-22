@@ -18,15 +18,21 @@
     "color": "from-emerald-500 to-teal-600"
   },
   {
+    "id": "pokemon_quetzal",
+    "title": "Pokemon Quetzal",
+    "url": "/gba/pokemon_quetzal.gba",
+    "color": "from-purple-500 to-pink-600"
+  },
+  {
     "id": "pokemon_ruby",
     "title": "Pokemon Ruby",
     "url": "/gba/pokemon_ruby.gba",
-    "color": "from-purple-500 to-pink-600"
+    "color": "from-rose-500 to-red-600"
   },
   {
     "id": "pokemon_sapphire",
     "title": "Pokemon Sapphire",
     "url": "/gba/pokemon_sapphire.gba",
-    "color": "from-rose-500 to-red-600"
+    "color": "from-cyan-500 to-blue-600"
   }
 ]
