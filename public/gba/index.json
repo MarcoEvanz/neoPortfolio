@@ -24,15 +24,21 @@
     "color": "from-purple-500 to-pink-600"
   },
   {
+    "id": "pokemon_rouge",
+    "title": "Pokemon Rouge",
+    "url": "/gba/pokemon_rouge.gba",
+    "color": "from-rose-500 to-red-600"
+  },
+  {
     "id": "pokemon_ruby",
     "title": "Pokemon Ruby",
     "url": "/gba/pokemon_ruby.gba",
-    "color": "from-rose-500 to-red-600"
+    "color": "from-cyan-500 to-blue-600"
   },
   {
     "id": "pokemon_sapphire",
     "title": "Pokemon Sapphire",
     "url": "/gba/pokemon_sapphire.gba",
-    "color": "from-cyan-500 to-blue-600"
+    "color": "from-orange-500 to-yellow-600"
   }
 ]
