@@ -40,5 +40,11 @@
     "title": "Pokemon Sapphire",
     "url": "/gba/pokemon_sapphire.gba",
     "color": "from-orange-500 to-yellow-600"
+  },
+  {
+    "id": "pokemon_unbound",
+    "title": "Pokemon Unbound",
+    "url": "/gba/Pokemon_Unbound.gba",
+    "color": "from-violet-500 to-purple-600"
   }
 ]
